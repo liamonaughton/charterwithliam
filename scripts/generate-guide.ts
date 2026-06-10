@@ -44,13 +44,8 @@ const brand = {
 function section(num: string, eyebrow: string, title: string, dek: string, inner: string): string {
   return `
     <section class="sec">
-      <div class="sec-head">
-        <span class="sec-num">${num}</span>
-        <div class="sec-head-text">
-          <p class="eyebrow">${eyebrow}</p>
-          <h2>${title}</h2>
-        </div>
-      </div>
+      <p class="eyebrow">${eyebrow}</p>
+      <h2 class="sec-title"><span class="sec-num">${num}</span>${title}</h2>
       <p class="dek">${dek}</p>
       ${inner}
     </section>`;
@@ -424,7 +419,7 @@ export function buildHtml(): string {
 
   /* ===================== COVER ===================== */
   .cover {
-    height: 985px;
+    height: 952px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -435,7 +430,8 @@ export function buildHtml(): string {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 16px;
+    min-height: 34px;
+    padding: 10px 0 18px;
     border-bottom: 1px solid ${brand.hair};
   }
   .cover-tag {
@@ -538,23 +534,20 @@ export function buildHtml(): string {
     margin-top: 36px;
     border-top: 1px solid ${brand.hair};
   }
-  .sec-head {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 18px;
+  .sec .eyebrow { margin-bottom: 10px; }
+  .sec h2.sec-title {
+    font-size: 27px;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
   }
   .sec-num {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
     color: ${brand.bronze};
-    padding-top: 7px;
+    font-weight: 600;
+    font-size: 0.92em;
+    margin-right: 18px;
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
   }
-  .sec-head-text .eyebrow { margin-bottom: 8px; }
-  .sec h2 { font-size: 27px; letter-spacing: -0.01em; }
 
   .dek {
     font-size: 14px;
@@ -562,15 +555,7 @@ export function buildHtml(): string {
     font-weight: 500;
     color: ${brand.ink};
     margin: 0 0 18px;
-    padding-left: 33px;
   }
-
-  /* keep section body aligned under the heading text, not the number */
-  .sec > p:not(.dek):not(.exhibit-cap),
-  .sec > ul,
-  .sec > table,
-  .sec > .advisory { margin-left: 33px; }
-  .sec > p:not(.dek):not(.exhibit-cap) { max-width: 100%; }
 
   /* ----- Exhibit caption ----- */
   .exhibit-cap {
@@ -579,7 +564,7 @@ export function buildHtml(): string {
     font-weight: 600;
     letter-spacing: 0.04em;
     color: ${brand.slate};
-    margin: 4px 0 12px 33px;
+    margin: 4px 0 12px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -596,9 +581,9 @@ export function buildHtml(): string {
 
   /* ----- Comparison exhibit (data table, sans) ----- */
   table.compare {
-    width: calc(100% - 33px);
+    width: 100%;
     border-collapse: collapse;
-    margin: 0 0 22px 33px;
+    margin: 0 0 22px;
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 10px;
     background: ${brand.surface};
@@ -632,7 +617,7 @@ export function buildHtml(): string {
   }
 
   /* ----- Bullet lists ----- */
-  ul.bullets { list-style: none; margin: 8px 0 20px 33px; padding: 0; }
+  ul.bullets { list-style: none; margin: 8px 0 20px; padding: 0; }
   ul.bullets li {
     position: relative;
     padding-left: 22px;
@@ -659,7 +644,7 @@ export function buildHtml(): string {
     border-left: 3px solid;
     background: ${brand.surface};
     padding: 18px 22px;
-    margin: 8px 0 6px 33px;
+    margin: 8px 0 6px;
   }
   .advisory-label {
     font-family: 'Inter', system-ui, sans-serif;
@@ -679,7 +664,7 @@ export function buildHtml(): string {
   .advisory-body { margin: 0; font-size: 12px; line-height: 1.62; color: ${brand.slate}; }
 
   /* ----- Due-diligence checklist ----- */
-  ul.checklist { list-style: none; margin: 10px 0 0 33px; padding: 0; }
+  ul.checklist { list-style: none; margin: 10px 0 0; padding: 0; }
   li.check-item {
     display: flex;
     align-items: flex-start;
@@ -740,8 +725,9 @@ export function buildHtml(): string {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 14px;
-    margin-bottom: 12px;
+    min-height: 34px;
+    padding: 8px 0 14px;
+    margin-bottom: 14px;
     border-bottom: 1px solid ${brand.hair};
   }
   .running-head .rh-doc {
@@ -780,14 +766,16 @@ export function buildHtml(): string {
 const footerTemplate = `
   <div style="
     width: 100%;
+    height: 100%;
+    box-sizing: border-box;
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 8px;
     letter-spacing: 0.04em;
     color: ${brand.bronze};
-    padding: 0 76px;
+    padding: 0 92px 26px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     -webkit-print-color-adjust: exact;
   ">
     <span style="text-transform:uppercase;letter-spacing:0.18em;">CharterWithLiam &middot; Private aviation, decoded</span>
@@ -831,10 +819,10 @@ async function main(): Promise<void> {
       headerTemplate,
       footerTemplate,
       margin: {
-        top: '60px',
-        bottom: '64px',
-        left: '76px',
-        right: '76px',
+        top: '66px',
+        bottom: '80px',
+        left: '92px',
+        right: '92px',
       },
     });
 
