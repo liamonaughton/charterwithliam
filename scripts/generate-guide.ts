@@ -2,7 +2,12 @@
  * generate-guide.ts
  *
  * Renders the CharterWithLiam Buyer's Guide as a styled HTML string and
- * exports it to a branded A4 PDF using Puppeteer.
+ * exports it to a PDF using Puppeteer.
+ *
+ * Editorial direction: reads like a Harvard Business Review briefing
+ * (analytical prose, deks, labeled exhibits) and looks like a commercial
+ * real-estate offering memorandum (ivory paper, navy + bronze, refined
+ * serif headlines, data exhibits, metric tiles).
  *
  * Run:
  *   npx ts-node --project tsconfig.json scripts/generate-guide.ts
@@ -11,56 +16,68 @@
  *   public/charter-buyers-guide.pdf
  */
 
-import { writeFileSync, mkdirSync, statSync } from 'fs';
+import { mkdirSync, statSync } from 'fs';
 import { dirname, join } from 'path';
 import puppeteer from 'puppeteer';
 
 // ---------------------------------------------------------------------------
-// Brand tokens
+// Palette — institutional / offering-memorandum
 // ---------------------------------------------------------------------------
 
 const brand = {
-  ink: '#0A1A2F', // page background
-  navy: '#12304F', // raised surfaces
-  accent: '#2E8BFF',
-  text: '#F7FAFC',
-  muted: '#8FA3B8',
-  success: '#1FA971',
-  danger: '#E5484D',
-  border: 'rgba(46, 139, 255, 0.28)',
+  ink: '#0A1A2F', // primary text / navy (brand)
+  paper: '#F5F2EA', // page background — warm ivory
+  surface: '#FCFAF4', // cards / exhibit panels
+  bronze: '#9C7C4A', // institutional accent
+  bronzeSoft: '#C7B187', // light bronze for rules/strokes
+  slate: '#5C6875', // muted secondary text
+  hair: '#E3DBCC', // hairline rules
+  positive: '#4E7A5C', // muted forest — advantage notes
+  caution: '#A85A4A', // muted terracotta — caution notes
 };
 
 // ---------------------------------------------------------------------------
-// Small content helpers
+// Content helpers
 // ---------------------------------------------------------------------------
 
-/** A green-flag / red-flag callout card. */
-function callout(kind: 'green' | 'red', title: string, body: string): string {
-  const accent = kind === 'green' ? brand.success : brand.danger;
-  const label = kind === 'green' ? 'Green flag' : 'Red flag';
-  const mark = kind === 'green' ? '✓' : '✕';
+/** A numbered, deck-led section that never breaks mid-block. */
+function section(num: string, eyebrow: string, title: string, dek: string, inner: string): string {
   return `
-    <div class="callout" style="border-color:${accent};">
-      <div class="callout-label" style="color:${accent};">
-        <span class="callout-mark" style="border-color:${accent};color:${accent};">${mark}</span>
-        ${label}
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-num">${num}</span>
+        <div class="sec-head-text">
+          <p class="eyebrow">${eyebrow}</p>
+          <h2>${title}</h2>
+        </div>
       </div>
-      <p class="callout-title">${title}</p>
-      <p class="callout-body">${body}</p>
-    </div>`;
-}
-
-/** A non-breaking content section with a numbered eyebrow + heading. */
-function section(num: string, eyebrow: string, title: string, inner: string): string {
-  return `
-    <section class="guide-section">
-      <p class="eyebrow">${eyebrow}</p>
-      <h2><span class="section-num">${num}</span>${title}</h2>
+      <p class="dek">${dek}</p>
       ${inner}
     </section>`;
 }
 
-/** A styled checklist item using a unicode ballot box (not an HTML input). */
+/** A metric tile for the "by the numbers" strip. */
+function statTile(value: string, label: string): string {
+  return `
+    <div class="stat">
+      <div class="stat-value">${value}</div>
+      <div class="stat-label">${label}</div>
+    </div>`;
+}
+
+/** An institutional advisory note (advantage / caution), bordered card. */
+function advisory(kind: 'advantage' | 'caution', title: string, body: string): string {
+  const color = kind === 'advantage' ? brand.positive : brand.caution;
+  const label = kind === 'advantage' ? 'Advantage' : 'Caution';
+  return `
+    <div class="advisory" style="border-left-color:${color};">
+      <p class="advisory-label" style="color:${color};">${label}</p>
+      <p class="advisory-title">${title}</p>
+      <p class="advisory-body">${body}</p>
+    </div>`;
+}
+
+/** A due-diligence checklist item using a unicode ballot box (not an input). */
 function checkItem(text: string): string {
   return `<li class="check-item"><span class="check-box">&#9744;</span><span>${text}</span></li>`;
 }
@@ -70,54 +87,100 @@ function checkItem(text: string): string {
 // ---------------------------------------------------------------------------
 
 export function buildHtml(): string {
+  // --- Cover — title page of an offering memorandum -------------------------
   const cover = `
     <section class="cover">
-      <div class="cover-rule"></div>
-      <p class="cover-kicker">Private aviation, decoded</p>
-      <h1 class="cover-title">The Charter<br/>Buyer&rsquo;s Guide</h1>
-      <p class="cover-subtitle">
-        How pricing, safety, and the fine print actually work &mdash; so you
-        book private with your eyes open, never overpay, and never get burned.
+      <div class="cover-top">
+        <span class="wordmark">CharterWithLiam</span>
+        <span class="cover-tag">Private Aviation Advisory</span>
+      </div>
+
+      <div class="cover-mid">
+        <div class="cover-rule"></div>
+        <p class="cover-eyebrow">Buyer&rsquo;s Briefing &middot; 2026</p>
+        <h1 class="cover-title">The Charter<br/>Buyer&rsquo;s Guide</h1>
+        <p class="cover-dek">
+          A decision framework for buying private aviation &mdash; pricing,
+          safety, and the contract terms that matter &mdash; decomposed for the
+          first-time flyer and the once-burned.
+        </p>
+      </div>
+
+      <div class="cover-bottom">
+        <div class="cover-meta">
+          <span class="cover-meta-label">Prepared by</span>
+          <span class="cover-meta-value">Liam &middot; charterwithliam.com</span>
+        </div>
+        <div class="cover-meta">
+          <span class="cover-meta-label">Classification</span>
+          <span class="cover-meta-value">Buyer Education</span>
+        </div>
+        <div class="cover-meta">
+          <span class="cover-meta-label">Scope</span>
+          <span class="cover-meta-value">On-Demand Charter</span>
+        </div>
+      </div>
+    </section>`;
+
+  // --- Executive summary + key metrics (HBR "Idea in Brief") ----------------
+  const exec = `
+    <section class="exec">
+      <p class="eyebrow">Executive Summary</p>
+      <p class="exec-lead">
+        Private aviation is sold through a fog of jargon, opaque quotes, and
+        offers that are too good to be true. This briefing clears it. It frames
+        the three ways private flights are purchased and when each pays off,
+        decomposes a charter quote into the cost drivers underneath it, and
+        supplies the safety and contract questions that separate certificated
+        operators from middlemen. Read it once and you will evaluate any quote
+        with the discipline of a seasoned buyer.
       </p>
-      <p class="cover-byline">By Liam &middot; charterwithliam.com</p>
+      <div class="metrics">
+        ${statTile('Three', 'Ways to fly private')}
+        ${statTile('Up to 75%', 'Empty-leg discount vs. retail')}
+        ${statTile('7.5%', 'Federal excise tax on charter')}
+        ${statTile('&lt; 25 hrs', 'Annual threshold favoring on-demand')}
+      </div>
     </section>`;
 
   const intro = section(
-    '',
-    'Start here',
+    '00',
+    'Orientation',
     'Who this is for',
+    `This is for the traveler who wants the real economics &mdash; not the brochure.`,
     `
       <p>
-        You&rsquo;re thinking about flying private &mdash; maybe for the first
-        time, maybe because the last time left a bad taste. You&rsquo;ve seen
-        the eye-watering quotes, the suspiciously cheap &ldquo;deals,&rdquo; and
-        the wall of jargon between you and a simple yes. This guide cuts through
-        all of it.
+        You are weighing a private flight &mdash; perhaps for the first time,
+        perhaps because the last one left a bad taste. You have seen the
+        eye-watering quotes, the suspiciously cheap &ldquo;deals,&rdquo; and the
+        wall of terminology standing between you and a simple yes. This briefing
+        is written to dismantle that wall.
       </p>
       <p>
-        It&rsquo;s for the traveler who wants the real story: what a charter
-        actually costs and why, how to read a quote line by line, the safety
-        questions that separate true operators from middlemen, and how empty
-        legs let you fly for a fraction of retail. No upsell, no fluff &mdash;
-        just what an honest broker would tell a friend.
-      </p>
-      <p class="lead-out">
-        Read it once and you&rsquo;ll negotiate like someone who&rsquo;s done
-        this a hundred times.
+        What follows is the analysis an honest advisor would give a friend: what
+        a charter actually costs and why, how to read a quote line by line, the
+        questions that distinguish accredited operators from brokers reselling
+        your flight, and how repositioning &mdash; empty legs &mdash; lets a
+        flexible buyer fly at a fraction of retail. No upsell. Just the structure
+        beneath the price.
       </p>`
   );
 
-  // --- Section 1: comparison table -----------------------------------------
+  // --- 01 — comparison exhibit ---------------------------------------------
   const section1 = section(
     '01',
-    'The landscape',
+    'The Landscape',
     'The three ways to fly private',
+    `Nearly every private flight is bought through one of three models. The disciplined choice follows from how many hours you actually fly in a year &mdash; not from how often you imagine you will.`,
     `
       <p>
-        Almost every private flight is bought one of three ways. They differ in
-        commitment, cost structure, and who carries the risk. Match the model to
-        how you actually travel &mdash; not to how often you imagine you will.
+        The models differ in capital commitment, cost structure, and who carries
+        the risk of an under-used asset. On-demand charter pushes that risk onto
+        the operator; jet cards and fractional shift convenience and guaranteed
+        access onto your balance sheet &mdash; at a premium you pay whether or not
+        you draw on it.
       </p>
+      <p class="exhibit-cap"><span class="exhibit-tag">Exhibit 1</span>The three purchasing models, compared</p>
       <table class="compare">
         <thead>
           <tr>
@@ -129,192 +192,186 @@ export function buildHtml(): string {
         </thead>
         <tbody>
           <tr>
-            <td class="row-head">How it works</td>
+            <td class="row-head">Structure</td>
             <td>Book a single trip on whatever aircraft is available.</td>
             <td>Prepay for a block of hours at a fixed hourly rate.</td>
-            <td>Buy a share of a specific aircraft; fly a set number of hours.</td>
+            <td>Purchase a share of a specific aircraft; fly a set allotment.</td>
           </tr>
           <tr>
-            <td class="row-head">Upfront cost</td>
+            <td class="row-head">Capital upfront</td>
             <td>None &mdash; pay per trip.</td>
-            <td>$100k&ndash;$500k deposit, typical.</td>
-            <td>$400k&ndash;$2M+ to buy in, plus monthly fees.</td>
+            <td>$100K&ndash;$500K deposit, typical.</td>
+            <td>$400K&ndash;$2M+ buy-in, plus monthly fees.</td>
           </tr>
           <tr>
-            <td class="row-head">Best for</td>
-            <td>A few trips a year, flexible routes.</td>
-            <td>25&ndash;50+ hours a year, want price certainty.</td>
-            <td>200+ hours a year, want guaranteed availability.</td>
+            <td class="row-head">Best fit</td>
+            <td>A handful of trips a year; flexible routing.</td>
+            <td>25&ndash;50+ hours a year; want price certainty.</td>
+            <td>200+ hours a year; want guaranteed availability.</td>
           </tr>
           <tr>
-            <td class="row-head">Price per hour</td>
-            <td>Lowest sticker, varies by trip.</td>
-            <td>Fixed, with a premium baked in.</td>
-            <td>Highest all-in, but most predictable.</td>
+            <td class="row-head">Hourly economics</td>
+            <td>Lowest sticker; varies trip to trip.</td>
+            <td>Fixed, with a convenience premium embedded.</td>
+            <td>Highest all-in, but the most predictable.</td>
           </tr>
           <tr>
-            <td class="row-head">The catch</td>
+            <td class="row-head">The trade-off</td>
             <td>Price and aircraft change every time.</td>
-            <td>Premium for convenience; watch the fine print.</td>
-            <td>Large capital tied up; depreciation is yours.</td>
+            <td>You pay for access you may not use.</td>
+            <td>Capital tied up; depreciation is yours.</td>
           </tr>
         </tbody>
       </table>
-      <p class="aside">
-        <strong>The honest default:</strong> if you fly fewer than ~25 hours a
-        year, on-demand charter almost always wins. Cards and fractional sell
-        convenience and certainty &mdash; you pay for both whether you use them
-        or not.
-      </p>`
+      ${advisory(
+        'advantage',
+        'The honest default',
+        'Below roughly 25 hours a year, on-demand charter almost always wins. Cards and fractional programs monetize certainty and convenience &mdash; charges you absorb in full whether or not you ever call on them.'
+      )}`
   );
 
-  // --- Section 2: what drives price ----------------------------------------
+  // --- 02 — cost drivers ----------------------------------------------------
   const section2 = section(
     '02',
-    'The economics',
+    'The Economics',
     'What actually drives the price',
+    `A charter quote is not a figure handed down from the cockpit. It is the sum of a few cost levers &mdash; identify them and a fair price becomes predictable.`,
     `
       <p>
-        A charter quote isn&rsquo;t pulled from the air. It&rsquo;s built from a
-        handful of cost levers. Understand them and you can predict a fair
-        number before anyone sends you one.
+        Decompose the quote and you can estimate a fair number before a broker
+        ever sends one. Seven levers do most of the work:
       </p>
       <ul class="bullets">
         <li><strong>Aircraft category.</strong> Turboprop &rarr; light &rarr; midsize &rarr; super-mid &rarr; heavy &rarr; ultra-long-range. Each step up roughly doubles the hourly burn.</li>
-        <li><strong>Flight time, not distance.</strong> You pay for hours in the air. Headwinds, routing, and fuel stops all add billable time.</li>
-        <li><strong>Repositioning.</strong> If the jet isn&rsquo;t based where you depart, you pay for it to fly to you &mdash; empty &mdash; and often to fly home.</li>
-        <li><strong>Daily minimums.</strong> Most operators bill a minimum of 1&ndash;2 hours per day, so a 30-minute hop still costs an hour-plus.</li>
-        <li><strong>Crew &amp; overnights.</strong> Multi-day trips mean crew hotels, per diems, and duty-time limits that can force a second crew.</li>
-        <li><strong>Peak days &amp; short notice.</strong> Holidays, big events, and sub-48-hour bookings command surcharges. Supply is finite.</li>
-        <li><strong>Airport fees.</strong> Landing, ramp, and de-icing fees vary wildly. Teterboro and Aspen are not Toledo.</li>
+        <li><strong>Flight time, not distance.</strong> You pay for hours aloft. Headwinds, routing, and fuel stops all add billable time.</li>
+        <li><strong>Repositioning.</strong> If the aircraft is not based where you depart, you fund its flight to you &mdash; empty &mdash; and often its flight home.</li>
+        <li><strong>Daily minimums.</strong> Most operators bill a 1&ndash;2 hour minimum per day, so a 30-minute hop still costs an hour or more.</li>
+        <li><strong>Crew and overnights.</strong> Multi-day trips carry crew hotels, per diems, and duty-time limits that can force a second crew.</li>
+        <li><strong>Peak demand and short notice.</strong> Holidays, marquee events, and sub-48-hour bookings command surcharges against finite supply.</li>
+        <li><strong>Airport fees.</strong> Landing, ramp, and de-icing charges vary widely. Teterboro and Aspen are not Toledo.</li>
       </ul>
-      ${callout(
-        'green',
-        'You can lower the number',
-        'Flexible dates, a round trip that keeps the jet with you (avoiding two repositioning legs), and departing from a field where aircraft are already based all push the quote down. Ask for them.'
+      ${advisory(
+        'advantage',
+        'Levers that move in your favor',
+        'Flexible dates, a round trip that keeps the aircraft with you (avoiding two repositioning legs), and departing from a field where aircraft are already based all pull the quote down. Ask for them by name.'
       )}`
   );
 
-  // --- Section 3: how to read a quote --------------------------------------
+  // --- 03 — reading a quote -------------------------------------------------
   const section3 = section(
     '03',
-    'The paperwork',
+    'The Instrument',
     'How to read a quote',
+    `A transparent quote itemizes what you are buying. An opaque one folds the markup into a single, unverifiable number. Read the structure before the bottom line.`,
     `
       <p>
-        A clean quote tells you exactly what you&rsquo;re buying. A murky one
-        hides the markup. Here&rsquo;s what each line means and where surprises
-        like to hide.
+        Seven lines carry the substance &mdash; and the surprises:
       </p>
       <ul class="bullets">
-        <li><strong>Aircraft &amp; tail number.</strong> A real quote names the specific aircraft or at least the exact make/model &mdash; not just &ldquo;midsize jet, or similar.&rdquo;</li>
-        <li><strong>Occupied vs. total flight time.</strong> Confirm whether repositioning legs are itemized or folded into one number.</li>
-        <li><strong>Federal Excise Tax (FET).</strong> 7.5% on domestic charter. If it&rsquo;s missing, ask &mdash; it&rsquo;s not optional, just sometimes hidden until invoicing.</li>
-        <li><strong>Fuel surcharge.</strong> Should be a line, not a moving target. Ask if it&rsquo;s capped.</li>
-        <li><strong>Landing, handling &amp; segment fees.</strong> Small individually, meaningful together. They should be listed, not &ldquo;TBD.&rdquo;</li>
-        <li><strong>Catering &amp; ground transport.</strong> Often pass-through. Know what&rsquo;s included before you assume it is.</li>
-        <li><strong>Cancellation terms.</strong> The single most important paragraph. Read it before you read the price.</li>
+        <li><strong>Aircraft and tail number.</strong> A real quote names the specific aircraft, or at minimum the exact make and model &mdash; not &ldquo;midsize jet or similar.&rdquo;</li>
+        <li><strong>Occupied vs. total flight time.</strong> Confirm whether repositioning legs are itemized or absorbed into one figure.</li>
+        <li><strong>Federal Excise Tax (FET).</strong> 7.5% on domestic charter. If it is absent, ask &mdash; it is not optional, only sometimes deferred to the invoice.</li>
+        <li><strong>Fuel surcharge.</strong> A line item, not a moving target. Ask whether it is capped.</li>
+        <li><strong>Landing, handling, and segment fees.</strong> Immaterial alone, meaningful together. They should be listed, not marked &ldquo;TBD.&rdquo;</li>
+        <li><strong>Catering and ground transport.</strong> Frequently pass-through. Establish what is included before assuming it is.</li>
+        <li><strong>Cancellation terms.</strong> The single most consequential paragraph in the document. Read it before you read the price.</li>
       </ul>
-      ${callout(
-        'red',
-        '&ldquo;All-in&rdquo; that isn&rsquo;t',
-        'If a broker quotes one flat number with no breakdown and waves off itemization, slow down. You can&rsquo;t verify what you can&rsquo;t see &mdash; and you can&rsquo;t negotiate it either.'
+      ${advisory(
+        'caution',
+        'The &ldquo;all-in&rdquo; that isn&rsquo;t',
+        'A single flat number with no breakdown &mdash; and a broker who waves off itemization &mdash; is a signal to slow down. What you cannot see, you cannot verify, and cannot negotiate.'
       )}`
   );
 
-  // --- Section 4: safety questions -----------------------------------------
+  // --- 04 — safety ----------------------------------------------------------
   const section4 = section(
     '04',
-    'Non-negotiables',
+    'Due Diligence',
     'The safety questions that matter',
+    `Most buyers never establish whether they are speaking with the operator that holds the certificate or a broker several steps removed. Five questions settle it.`,
     `
       <p>
-        Most people booking private have no idea whether they&rsquo;re talking
-        to the operator who holds the certificate or a broker three steps
-        removed. These questions cut straight to it.
+        A certificated operator answers all five without friction. Hesitation or
+        deflection is itself the answer.
       </p>
       <ul class="bullets">
-        <li><strong>&ldquo;Who holds the operating certificate for this flight?&rdquo;</strong> You want the Part 135 operator&rsquo;s name &mdash; the entity legally responsible for the flight.</li>
-        <li><strong>&ldquo;Is this aircraft on that operator&rsquo;s certificate?&rdquo;</strong> Brokering a jet that isn&rsquo;t is a major red flag.</li>
-        <li><strong>&ldquo;What&rsquo;s your safety rating?&rdquo;</strong> ARGUS, Wyvern, or IS-BAO are the recognized third-party audits. Ask for the current tier.</li>
-        <li><strong>&ldquo;What are the pilots&rsquo; hours and currency?&rdquo;</strong> Two qualified, type-current pilots &mdash; not one, not a contractor flying an unfamiliar type.</li>
-        <li><strong>&ldquo;Is there insurance, and what&rsquo;s the liability limit?&rdquo;</strong> You can ask to be named as an additional insured.</li>
+        <li><strong>&ldquo;Who holds the operating certificate for this flight?&rdquo;</strong> You want the Part 135 operator&rsquo;s name &mdash; the entity legally accountable for the flight.</li>
+        <li><strong>&ldquo;Is this aircraft on that operator&rsquo;s certificate?&rdquo;</strong> Brokering an aircraft that is not is a material red flag.</li>
+        <li><strong>&ldquo;What is your third-party safety rating?&rdquo;</strong> ARGUS, Wyvern, and IS-BAO are the recognized audits. Ask for the current tier.</li>
+        <li><strong>&ldquo;What are the pilots&rsquo; hours and type currency?&rdquo;</strong> Two qualified, type-current pilots &mdash; not one, and not a contractor flying an unfamiliar aircraft.</li>
+        <li><strong>&ldquo;What is the insurance liability limit?&rdquo;</strong> You may ask to be named as an additional insured.</li>
       </ul>
-      ${callout(
-        'green',
-        'A good operator answers instantly',
-        'Certificate holder, safety rating, insurance limits &mdash; a legitimate operator has these at their fingertips and shares them without friction. Hesitation or deflection is your answer.'
+      ${advisory(
+        'advantage',
+        'What a credible answer sounds like',
+        'Certificate holder, safety tier, and insurance limits delivered instantly and in writing. A legitimate operator keeps these at hand and shares them without being pressed.'
       )}`
   );
 
-  // --- Section 5: empty legs -----------------------------------------------
+  // --- 05 — empty legs ------------------------------------------------------
   const section5 = section(
     '05',
-    'The discount',
+    'The Inefficiency',
     'How empty legs work',
+    `Repositioning is a structural inefficiency in charter &mdash; and the single largest source of discount available to a flexible buyer.`,
     `
       <p>
-        When a jet flies one way for a client, it often has to return &mdash; or
-        reposition to its next trip &mdash; empty. The operator is paying for
-        that flight regardless, so any revenue beats none. That&rsquo;s why
-        empty legs sell for up to 75% off retail.
+        When an aircraft completes a one-way trip, it frequently must reposition
+        empty to its next assignment. The operator funds that leg regardless, so
+        any revenue improves on none &mdash; which is why empty legs clear at
+        discounts of up to 75% against retail. The price of entry is flexibility.
       </p>
       <ul class="bullets">
-        <li><strong>The trade-off is flexibility.</strong> Empty legs run on the jet&rsquo;s schedule, not yours. The closer you can flex on date, time, and exact airport, the more deals open up.</li>
-        <li><strong>They&rsquo;re perishable.</strong> A leg exists only until the aircraft moves. Many surface 24&ndash;72 hours out and vanish fast.</li>
-        <li><strong>They can change or cancel.</strong> If the original paying trip moves, the empty leg moves with it. Have a backup plan for anything truly time-critical.</li>
-        <li><strong>Routes matter.</strong> Busy corridors &mdash; LA&ndash;Vegas, South Florida&ndash;Northeast, NY&ndash;Florida &mdash; generate the most empty legs.</li>
+        <li><strong>They run on the aircraft&rsquo;s schedule.</strong> The more you can flex on date, time, and exact airport, the more legs open up.</li>
+        <li><strong>They are perishable.</strong> A leg exists only until the aircraft moves. Many surface 24&ndash;72 hours out and vanish quickly.</li>
+        <li><strong>They can change or cancel.</strong> If the originating paid trip moves, the empty leg moves with it. Keep a backup for anything truly time-critical.</li>
+        <li><strong>Corridors concentrate supply.</strong> LA&ndash;Vegas, South Florida&ndash;Northeast, and New York&ndash;Florida generate the most repositioning.</li>
       </ul>
-      ${callout(
-        'green',
-        'How to actually catch them',
-        'Tell a broker your home airports and the routes you fly, then let them filter the firehose for you. Matched alerts beat refreshing a public empty-leg page every morning &mdash; the good ones are gone before they&rsquo;re ever posted.'
+      ${advisory(
+        'advantage',
+        'How to capture them in practice',
+        'Give an advisor your home airports and the routes you fly, then let them filter the firehose. Matched alerts outperform refreshing a public empty-leg page &mdash; the best legs are spoken for before they are ever posted.'
       )}`
   );
 
-  // --- Section 6: pre-booking checklist (styled checkboxes) -----------------
+  // --- 06 — due-diligence checklist ----------------------------------------
   const checklist = [
-    'Confirmed the Part 135 operator who holds the certificate for the flight.',
+    'Confirmed the Part 135 operator that holds the certificate for the flight.',
     'Verified the aircraft is on that operator&rsquo;s certificate.',
-    'Asked for the safety rating (ARGUS / Wyvern / IS-BAO).',
-    'Got an itemized quote &mdash; flight time, FET, fuel, fees all listed.',
+    'Obtained the third-party safety rating (ARGUS / Wyvern / IS-BAO).',
+    'Received an itemized quote &mdash; flight time, FET, fuel, and fees all listed.',
     'Confirmed whether repositioning legs are included in the price.',
     'Read the cancellation and change terms in full.',
-    'Checked what&rsquo;s included: catering, ground transport, Wi-Fi, de-icing.',
-    'Confirmed pilot count, type-currency, and insurance limits.',
-    'Asked about flexible dates or a round trip to lower the cost.',
-    'Have the operator&rsquo;s direct contact for the day of travel.',
+    'Established what is included: catering, ground transport, Wi-Fi, de-icing.',
+    'Confirmed pilot count, type currency, and insurance limits.',
+    'Requested flexible dates or a round trip to reduce cost.',
+    'Secured the operator&rsquo;s direct contact for the day of travel.',
   ];
   const section6 = section(
     '06',
-    'Before you wire a deposit',
-    'The pre-booking checklist',
+    'The Checklist',
+    'Pre-booking due diligence',
+    `Ten items to clear before capital changes hands. If you cannot tick all ten, you have a question to ask &mdash; not a deposit to send.`,
     `
-      <p>
-        One page to run through before money changes hands. If you can&rsquo;t
-        tick all ten, you have a question to ask &mdash; not a deposit to send.
-      </p>
       <ul class="checklist">
         ${checklist.map(checkItem).join('\n        ')}
       </ul>`
   );
 
-  // --- Final CTA -----------------------------------------------------------
-  const cta = `
-    <section class="cta">
-      <div class="cta-card">
-        <p class="cta-kicker">Your move</p>
-        <h2 class="cta-title">Have a trip in mind?</h2>
-        <p class="cta-body">
-          Send your route and dates and I&rsquo;ll find the right flight at the
-          right price &mdash; and flag the empty legs that match before they
-          disappear.
-        </p>
-        <p class="cta-url">charterwithliam.com</p>
-      </div>
+  // --- Closing --------------------------------------------------------------
+  const close = `
+    <section class="close">
+      <div class="close-rule"></div>
+      <p class="eyebrow">Engagement</p>
+      <h2 class="close-title">Have a trip in mind?</h2>
+      <p class="close-body">
+        Send your route and dates. I will structure the right flight at the right
+        price &mdash; and surface the empty legs that match before they clear.
+      </p>
+      <p class="close-url">charterwithliam.com</p>
     </section>`;
 
-  // --- Page shell ----------------------------------------------------------
+  // --- Document shell -------------------------------------------------------
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -322,300 +379,388 @@ export function buildHtml(): string {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The Charter Buyer's Guide</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap');
 
   * { box-sizing: border-box; }
 
   html, body {
     margin: 0;
     padding: 0;
-    background: ${brand.ink};
-    color: ${brand.text};
-    font-family: 'Inter', system-ui, sans-serif;
+    background: ${brand.paper};
+    color: ${brand.ink};
+    font-family: 'Newsreader', Georgia, serif;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* Wordmark, top-left of every page, via running header in @page margin box
-     is not reliable cross-engine, so we anchor it on the cover and rely on the
-     footer template (added by Puppeteer) for per-page chrome. */
+  /* ----- Typographic primitives ----- */
+  h1, h2 { font-family: 'Newsreader', Georgia, serif; font-weight: 500; margin: 0; line-height: 1.12; }
 
-  .wordmark {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.01em;
-    color: ${brand.accent};
+  p {
+    margin: 0 0 16px;
+    font-size: 12.5px;
+    line-height: 1.78;
+    color: ${brand.ink};
   }
-
-  h1, h2, h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    line-height: 1.1;
-    margin: 0;
-  }
-
-  p { margin: 0 0 18px; line-height: 1.85; font-size: 12.5px; color: ${brand.text}; }
-  strong { color: ${brand.text}; font-weight: 600; }
-
-  /* ----- Sections: never break mid-section ----- */
-  .guide-section {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    padding: 16px 0 34px;
-    border-top: 1px solid ${brand.border};
-    margin-top: 44px;
-  }
-  .guide-section:first-of-type { border-top: none; }
+  strong { font-weight: 600; }
 
   .eyebrow {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.24em;
-    font-size: 9.5px;
-    font-weight: 500;
-    color: ${brand.accent};
-    margin: 0 0 14px;
+    letter-spacing: 0.26em;
+    font-size: 9px;
+    font-weight: 600;
+    color: ${brand.bronze};
+    margin: 0 0 12px;
   }
 
-  h2 {
-    font-size: 25px;
-    margin-bottom: 22px;
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-  }
-  .section-num {
-    color: ${brand.accent};
-    font-size: 16px;
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
+  .wordmark {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-size: 14px;
+    color: ${brand.ink};
   }
 
-  .lead-out { color: ${brand.muted}; font-style: italic; }
-  .aside {
-    color: ${brand.muted};
-    font-size: 11.5px;
-    line-height: 1.7;
-    border-left: 2px solid ${brand.accent};
-    padding-left: 18px;
-    margin-top: 14px;
-  }
-  .aside strong { color: ${brand.text}; }
-
-  /* ----- Cover ----- */
+  /* ===================== COVER ===================== */
   .cover {
-    height: 980px;
+    height: 985px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     break-after: page;
     page-break-after: always;
-    position: relative;
-    background:
-      radial-gradient(900px 520px at 85% -8%, rgba(46,139,255,0.30), transparent 60%),
-      radial-gradient(700px 460px at 5% 108%, rgba(46,139,255,0.12), transparent 60%);
   }
-  .cover-rule { width: 56px; height: 4px; background: ${brand.accent}; border-radius: 2px; margin-bottom: 36px; }
-  .cover-kicker {
-    font-family: 'Space Grotesk', sans-serif;
+  .cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid ${brand.hair};
+  }
+  .cover-tag {
+    font-family: 'Inter', system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 9px;
+    font-weight: 500;
+    color: ${brand.slate};
+  }
+  .cover-mid { padding: 40px 0; }
+  .cover-rule { width: 64px; height: 2px; background: ${brand.bronze}; margin-bottom: 34px; }
+  .cover-eyebrow {
+    font-family: 'Inter', system-ui, sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.28em;
-    font-size: 11px;
-    font-weight: 500;
-    color: ${brand.accent};
-    margin: 0 0 28px;
+    font-size: 10px;
+    font-weight: 600;
+    color: ${brand.bronze};
+    margin: 0 0 26px;
   }
   .cover-title {
-    font-size: 58px;
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-    margin: 0 0 34px;
-  }
-  .cover-subtitle {
-    font-size: 16px;
-    line-height: 1.7;
-    color: ${brand.muted};
-    max-width: 460px;
-    margin: 0 0 52px;
-  }
-  .cover-byline {
-    font-family: 'Space Grotesk', sans-serif;
+    font-size: 62px;
     font-weight: 500;
-    font-size: 13px;
-    color: ${brand.text};
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    margin: 0 0 32px;
+  }
+  .cover-dek {
+    font-size: 16.5px;
+    line-height: 1.62;
+    color: ${brand.slate};
+    max-width: 470px;
     margin: 0;
   }
-  .cover-byline::before {
-    content: '';
-    display: block;
-    width: 200px;
-    height: 1px;
-    background: ${brand.border};
-    margin-bottom: 20px;
+  .cover-bottom {
+    display: flex;
+    gap: 48px;
+    padding-top: 22px;
+    border-top: 1px solid ${brand.hair};
+  }
+  .cover-meta { display: flex; flex-direction: column; gap: 5px; }
+  .cover-meta-label {
+    font-family: 'Inter', system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 8px;
+    font-weight: 600;
+    color: ${brand.bronze};
+  }
+  .cover-meta-value { font-size: 12px; color: ${brand.ink}; }
+
+  /* ===================== EXECUTIVE SUMMARY ===================== */
+  .exec {
+    break-inside: avoid;
+    padding: 8px 0 6px;
+  }
+  .exec-lead {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: ${brand.ink};
+    margin: 0 0 30px;
+  }
+  .metrics {
+    display: flex;
+    border: 1px solid ${brand.hair};
+    border-radius: 4px;
+    background: ${brand.surface};
+    overflow: hidden;
+  }
+  .stat {
+    flex: 1;
+    padding: 20px 22px;
+    border-right: 1px solid ${brand.hair};
+  }
+  .stat:last-child { border-right: none; }
+  .stat-value {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: ${brand.bronze};
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .stat-label {
+    font-family: 'Inter', system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 8px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: ${brand.slate};
   }
 
-  /* ----- Comparison table ----- */
+  /* ===================== SECTIONS ===================== */
+  .sec {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding: 30px 0 10px;
+    margin-top: 36px;
+    border-top: 1px solid ${brand.hair};
+  }
+  .sec-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+  .sec-num {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: ${brand.bronze};
+    padding-top: 7px;
+    font-variant-numeric: tabular-nums;
+  }
+  .sec-head-text .eyebrow { margin-bottom: 8px; }
+  .sec h2 { font-size: 27px; letter-spacing: -0.01em; }
+
+  .dek {
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 500;
+    color: ${brand.ink};
+    margin: 0 0 18px;
+    padding-left: 33px;
+  }
+
+  /* keep section body aligned under the heading text, not the number */
+  .sec > p:not(.dek):not(.exhibit-cap),
+  .sec > ul,
+  .sec > table,
+  .sec > .advisory { margin-left: 33px; }
+  .sec > p:not(.dek):not(.exhibit-cap) { max-width: 100%; }
+
+  /* ----- Exhibit caption ----- */
+  .exhibit-cap {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: ${brand.slate};
+    margin: 4px 0 12px 33px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .exhibit-tag {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 8.5px;
+    color: ${brand.bronze};
+    border: 1px solid ${brand.bronzeSoft};
+    border-radius: 3px;
+    padding: 3px 7px;
+  }
+
+  /* ----- Comparison exhibit (data table, sans) ----- */
   table.compare {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin: 10px 0 26px;
-    font-size: 11px;
-    border: 1px solid ${brand.accent};
-    border-radius: 12px;
-    overflow: hidden;
+    width: calc(100% - 33px);
+    border-collapse: collapse;
+    margin: 0 0 22px 33px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 10px;
+    background: ${brand.surface};
+    border: 1px solid ${brand.hair};
   }
   table.compare th, table.compare td {
     text-align: left;
-    padding: 15px 17px;
-    line-height: 1.55;
+    padding: 13px 15px;
+    line-height: 1.5;
     vertical-align: top;
-    border-bottom: 1px solid ${brand.border};
-    border-right: 1px solid ${brand.border};
+    border-bottom: 1px solid ${brand.hair};
+    border-right: 1px solid ${brand.hair};
   }
   table.compare th:last-child, table.compare td:last-child { border-right: none; }
   table.compare tbody tr:last-child td { border-bottom: none; }
   table.compare thead th {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: ${brand.text};
-    background: ${brand.accent}26;
-    border-bottom: 1px solid ${brand.accent};
-  }
-  table.compare tbody tr:nth-child(odd) td { background: rgba(255,255,255,0.02); }
-  table.compare tbody tr:nth-child(even) td { background: rgba(18,48,79,0.45); }
-  td.row-head {
-    font-family: 'Space Grotesk', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 9px;
     font-weight: 600;
-    color: ${brand.accent};
-    background: rgba(46,139,255,0.10) !important;
+    color: ${brand.ink};
+    background: rgba(156, 124, 74, 0.10);
+    border-bottom: 1.5px solid ${brand.bronze};
+  }
+  table.compare tbody td { color: ${brand.ink}; }
+  td.row-head {
+    font-weight: 600;
+    color: ${brand.bronze};
+    background: rgba(156, 124, 74, 0.05);
     white-space: nowrap;
   }
 
   /* ----- Bullet lists ----- */
-  ul.bullets { list-style: none; margin: 10px 0 22px; padding: 0; }
+  ul.bullets { list-style: none; margin: 8px 0 20px 33px; padding: 0; }
   ul.bullets li {
     position: relative;
-    padding-left: 26px;
-    margin-bottom: 14px;
+    padding-left: 22px;
+    margin-bottom: 13px;
     font-size: 12.5px;
-    line-height: 1.7;
-    color: ${brand.text};
+    line-height: 1.65;
   }
   ul.bullets li::before {
     content: '';
     position: absolute;
-    left: 2px;
-    top: 9px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: ${brand.accent};
+    left: 0;
+    top: 8px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid ${brand.bronze};
+    background: ${brand.bronze};
+    transform: rotate(45deg);
   }
 
-  /* ----- Callout cards ----- */
-  .callout {
+  /* ----- Advisory note ----- */
+  .advisory {
     break-inside: avoid;
-    border: 1px solid;
-    border-left-width: 4px;
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin: 14px 0 6px;
-    background: rgba(18,48,79,0.40);
+    border: 1px solid ${brand.hair};
+    border-left: 3px solid;
+    background: ${brand.surface};
+    padding: 18px 22px;
+    margin: 8px 0 6px 33px;
   }
-  .callout-label {
-    font-family: 'Space Grotesk', sans-serif;
+  .advisory-label {
+    font-family: 'Inter', system-ui, sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-size: 9.5px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin-bottom: 10px;
-  }
-  .callout-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    border: 1px solid;
-    border-radius: 50%;
-    font-size: 10px;
-    line-height: 1;
-  }
-  .callout-title {
-    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 0.2em;
+    font-size: 8.5px;
     font-weight: 600;
-    font-size: 13px;
-    margin: 0 0 7px;
-    color: ${brand.text};
+    margin: 0 0 8px;
   }
-  .callout-body { margin: 0; font-size: 11.5px; color: ${brand.muted}; line-height: 1.7; }
+  .advisory-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0 0 6px;
+    color: ${brand.ink};
+  }
+  .advisory-body { margin: 0; font-size: 12px; line-height: 1.62; color: ${brand.slate}; }
 
-  /* ----- Checklist ----- */
-  ul.checklist { list-style: none; margin: 12px 0 0; padding: 0; }
+  /* ----- Due-diligence checklist ----- */
+  ul.checklist { list-style: none; margin: 10px 0 0 33px; padding: 0; }
   li.check-item {
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    padding: 16px 20px;
-    margin-bottom: 11px;
-    background: rgba(18,48,79,0.45);
-    border: 1px solid ${brand.border};
-    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 9px;
+    background: ${brand.surface};
+    border: 1px solid ${brand.hair};
+    border-radius: 4px;
     font-size: 12.5px;
-    line-height: 1.55;
+    line-height: 1.5;
     break-inside: avoid;
   }
   .check-box {
-    color: ${brand.accent};
-    font-size: 18px;
+    color: ${brand.bronze};
+    font-size: 17px;
     line-height: 1;
     flex-shrink: 0;
     margin-top: -1px;
   }
 
-  /* ----- Final CTA ----- */
-  .cta { break-inside: avoid; padding-top: 30px; }
-  .cta-card {
-    border: 1px solid ${brand.accent};
-    border-radius: 16px;
-    padding: 52px 44px;
+  /* ===================== CLOSING ===================== */
+  .close {
+    break-inside: avoid;
+    margin-top: 44px;
+    padding: 40px 44px;
     text-align: center;
-    background:
-      radial-gradient(600px 300px at 50% -40%, rgba(46,139,255,0.28), transparent 70%),
-      rgba(18,48,79,0.55);
+    background: ${brand.ink};
+    color: ${brand.paper};
+    border-radius: 4px;
   }
-  .cta-kicker {
-    font-family: 'Space Grotesk', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.24em;
-    font-size: 10px;
+  .close-rule { width: 56px; height: 2px; background: ${brand.bronze}; margin: 0 auto 24px; }
+  .close .eyebrow { color: ${brand.bronzeSoft}; }
+  .close-title {
+    font-size: 32px;
     font-weight: 500;
-    color: ${brand.accent};
-    margin: 0 0 12px;
+    color: ${brand.paper};
+    margin: 0 0 16px;
   }
-  .cta-title { font-size: 30px; margin: 0 0 18px; }
-  .cta-body { color: ${brand.muted}; max-width: 420px; margin: 0 auto 26px; font-size: 13px; line-height: 1.7; }
-  .cta-url {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    color: ${brand.accent};
+  .close-body {
+    color: rgba(245, 242, 234, 0.72);
+    max-width: 430px;
+    margin: 0 auto 24px;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .close-url {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-size: 18px;
+    color: ${brand.bronzeSoft};
     margin: 0;
   }
 
-  /* Body content gets the wordmark anchored at the top of the flow page. */
-  .body-wordmark { margin-bottom: 28px; }
+  /* Running header for interior pages */
+  .running-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid ${brand.hair};
+  }
+  .running-head .rh-doc {
+    font-family: 'Inter', system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 8.5px;
+    font-weight: 500;
+    color: ${brand.slate};
+  }
 </style>
 </head>
 <body>
   ${cover}
-  <div class="body-wordmark wordmark">CharterWithLiam</div>
+  <div class="running-head">
+    <span class="wordmark">CharterWithLiam</span>
+    <span class="rh-doc">The Charter Buyer&rsquo;s Guide</span>
+  </div>
+  ${exec}
   ${intro}
   ${section1}
   ${section2}
@@ -623,13 +768,13 @@ export function buildHtml(): string {
   ${section4}
   ${section5}
   ${section6}
-  ${cta}
+  ${close}
 </body>
 </html>`;
 }
 
 // ---------------------------------------------------------------------------
-// Footer template (rendered by Puppeteer in the bottom page margin)
+// Per-page footer (rendered by Puppeteer in the bottom margin)
 // ---------------------------------------------------------------------------
 
 const footerTemplate = `
@@ -637,18 +782,19 @@ const footerTemplate = `
     width: 100%;
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 8px;
-    color: ${brand.muted};
-    padding: 0 48px;
+    letter-spacing: 0.04em;
+    color: ${brand.bronze};
+    padding: 0 76px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     -webkit-print-color-adjust: exact;
   ">
-    <span>CharterWithLiam &mdash; private aviation, decoded</span>
-    <span>Page <span class="pageNumber"></span> / <span class="totalPages"></span></span>
+    <span style="text-transform:uppercase;letter-spacing:0.18em;">CharterWithLiam &middot; Private aviation, decoded</span>
+    <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
   </div>`;
 
-// A near-empty header keeps Puppeteer from injecting its default date/title.
+// Near-empty header suppresses Puppeteer's default date/title injection.
 const headerTemplate = `<div style="font-size:0; padding:0; margin:0;"></div>`;
 
 // ---------------------------------------------------------------------------
@@ -668,9 +814,9 @@ async function main(): Promise<void> {
 
   try {
     const page = await browser.newPage();
-    // Load the HTML and wait for the Google Fonts @import to resolve so the
-    // PDF renders with Space Grotesk / Inter rather than fallback fonts.
     await page.setContent(html, { waitUntil: 'load' });
+    // Wait for the Google Fonts @import to resolve so the PDF renders with
+    // Newsreader / Inter rather than fallback fonts.
     try {
       await page.evaluateHandle('document.fonts.ready');
     } catch {
@@ -685,14 +831,13 @@ async function main(): Promise<void> {
       headerTemplate,
       footerTemplate,
       margin: {
-        top: '64px',
+        top: '60px',
         bottom: '64px',
-        left: '72px',
-        right: '72px',
+        left: '76px',
+        right: '76px',
       },
     });
 
-    // `path` already wrote the file; confirm and report size.
     const { size } = statSync(outPath);
     const kb = (size / 1024).toFixed(1);
     console.log(`✓ Wrote ${outPath}`);
@@ -706,7 +851,7 @@ async function main(): Promise<void> {
   }
 }
 
-// Run only when invoked directly (not when imported, e.g. for testing/preview).
+// Run only when invoked directly (not when imported, e.g. for preview).
 const invokedPath = process.argv[1] ?? '';
 if (invokedPath.includes('generate-guide')) {
   main().catch((err) => {
