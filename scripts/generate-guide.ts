@@ -85,11 +85,6 @@ export function buildHtml(): string {
   // --- Cover — title page of an offering memorandum -------------------------
   const cover = `
     <section class="cover">
-      <div class="cover-top">
-        <span class="wordmark">CharterWithLiam</span>
-        <span class="cover-tag">Private Aviation Advisory</span>
-      </div>
-
       <div class="cover-mid">
         <div class="cover-rule"></div>
         <p class="cover-eyebrow">Buyer&rsquo;s Briefing &middot; 2026</p>
@@ -387,6 +382,11 @@ export function buildHtml(): string {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  /* Page side margins are 0 so the ivory background bleeds to the sheet edge;
+     this horizontal padding insets the content, becoming the padding between
+     the colored page and the text. Top/bottom strips are filled by the
+     Puppeteer header/footer templates so the bleed is continuous. */
+  body { padding: 0 78px; }
 
   /* ----- Typographic primitives ----- */
   h1, h2 { font-family: 'Newsreader', Georgia, serif; font-weight: 500; margin: 0; line-height: 1.12; }
@@ -409,38 +409,15 @@ export function buildHtml(): string {
     margin: 0 0 12px;
   }
 
-  .wordmark {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    font-size: 14px;
-    color: ${brand.ink};
-  }
-
   /* ===================== COVER ===================== */
   .cover {
-    height: 952px;
+    height: 974px;
+    position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     break-after: page;
     page-break-after: always;
-  }
-  .cover-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 34px;
-    padding: 10px 0 18px;
-    border-bottom: 1px solid ${brand.hair};
-  }
-  .cover-tag {
-    font-family: 'Inter', system-ui, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.24em;
-    font-size: 9px;
-    font-weight: 500;
-    color: ${brand.slate};
   }
   .cover-mid { padding: 40px 0; }
   .cover-rule { width: 64px; height: 2px; background: ${brand.bronze}; margin-bottom: 34px; }
@@ -468,6 +445,10 @@ export function buildHtml(): string {
     margin: 0;
   }
   .cover-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
     gap: 48px;
     padding-top: 22px;
@@ -720,32 +701,10 @@ export function buildHtml(): string {
     margin: 0;
   }
 
-  /* Running header for interior pages */
-  .running-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 34px;
-    padding: 8px 0 14px;
-    margin-bottom: 14px;
-    border-bottom: 1px solid ${brand.hair};
-  }
-  .running-head .rh-doc {
-    font-family: 'Inter', system-ui, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    font-size: 8.5px;
-    font-weight: 500;
-    color: ${brand.slate};
-  }
 </style>
 </head>
 <body>
   ${cover}
-  <div class="running-head">
-    <span class="wordmark">CharterWithLiam</span>
-    <span class="rh-doc">The Charter Buyer&rsquo;s Guide</span>
-  </div>
   ${exec}
   ${intro}
   ${section1}
@@ -763,27 +722,52 @@ export function buildHtml(): string {
 // Per-page footer (rendered by Puppeteer in the bottom margin)
 // ---------------------------------------------------------------------------
 
-const footerTemplate = `
+// The header/footer templates paint the full-width top/bottom margin strips in
+// the page's ivory so the background bleeds continuously to every edge, and
+// carry the running letterhead + footer on every page.
+// Note: the reset + 100% height makes the ivory background fill the entire
+// margin strip (Chromium otherwise leaves a default body margin / white edge).
+const tplReset = `<style>
+  html,body{margin:0;padding:0;height:100%;width:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  *{box-sizing:border-box;}
+</style>`;
+
+const headerTemplate = `${tplReset}
   <div style="
     width: 100%;
     height: 100%;
-    box-sizing: border-box;
+    background: ${brand.paper};
+    font-family: 'Inter', system-ui, sans-serif;
+    padding: 26px 78px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  ">
+    <span style="font-weight:600;font-size:9px;letter-spacing:0.02em;color:${brand.ink};">CharterWithLiam</span>
+    <span style="text-transform:uppercase;letter-spacing:0.2em;font-size:7.5px;font-weight:500;color:${brand.slate};">Private Aviation Advisory</span>
+  </div>`;
+
+const footerTemplate = `${tplReset}
+  <div style="
+    width: 100%;
+    height: 100%;
+    background: ${brand.paper};
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 8px;
     letter-spacing: 0.04em;
     color: ${brand.bronze};
-    padding: 0 92px 26px;
+    padding: 0 78px 30px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   ">
     <span style="text-transform:uppercase;letter-spacing:0.18em;">CharterWithLiam &middot; Private aviation, decoded</span>
     <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
   </div>`;
-
-// Near-empty header suppresses Puppeteer's default date/title injection.
-const headerTemplate = `<div style="font-size:0; padding:0; margin:0;"></div>`;
 
 // ---------------------------------------------------------------------------
 // Main
@@ -819,10 +803,10 @@ async function main(): Promise<void> {
       headerTemplate,
       footerTemplate,
       margin: {
-        top: '66px',
-        bottom: '80px',
-        left: '92px',
-        right: '92px',
+        top: '62px',
+        bottom: '72px',
+        left: '0',
+        right: '0',
       },
     });
 
