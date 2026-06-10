@@ -6,6 +6,7 @@ import { getServiceClient, isSupabaseConfigured } from '@/lib/supabase-server';
 import { verifyTurnstile } from '@/lib/turnstile';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { sendGuideEmail, sendEmptyLegsEmail } from '@/lib/resend';
+import { SITE_URL } from '@/lib/env';
 
 export interface SubscribeState {
   ok: boolean;
@@ -143,30 +144,35 @@ export async function subscribe(
   const alreadyHadGuide = Boolean(existing?.guide_sent_at);
 
   if (data.wantsGuide && !alreadyHadGuide) {
-    const downloadUrl = await createSignedGuideUrl(supabase);
-    if (downloadUrl) {
-      const sent = await sendGuideEmail({
-        to: data.email,
-        firstName: data.firstName,
-        downloadUrl,
-      });
-      if (sent.ok) {
-        await supabase
-          .from('leads')
-          .update({ guide_sent_at: new Date().toISOString() })
-          .eq('email', data.email);
-      }
+    // Prefer a private signed URL from Storage; fall back to the public copy
+    // served from /public so the email still sends if Storage isn't set up.
+    const downloadUrl = (await createSignedGuideUrl(supabase)) ?? publicGuideUrl();
+    const sent = await sendGuideEmail({
+      to: data.email,
+      firstName: data.firstName,
+      downloadUrl,
+    });
+    if (sent.ok) {
+      await supabase
+        .from('leads')
+        .update({ guide_sent_at: new Date().toISOString() })
+        .eq('email', data.email);
+    } else {
+      console.error('[subscribe] guide email failed to send:', sent.error);
     }
   }
 
   // Only welcome to empty-legs if this submission added the flag.
   const newlyEmptyLegs = data.wantsEmptyLegs && !existing?.wants_empty_legs;
   if (newlyEmptyLegs) {
-    await sendEmptyLegsEmail({
+    const sent = await sendEmptyLegsEmail({
       to: data.email,
       firstName: data.firstName,
       homeAirport: data.homeAirport,
     });
+    if (!sent.ok) {
+      console.error('[subscribe] empty-legs email failed to send:', sent.error);
+    }
   }
 
   return {
@@ -190,9 +196,24 @@ async function createSignedGuideUrl(
     const { data, error } = await supabase.storage
       .from(bucket)
       .createSignedUrl(path, ttl);
-    if (error || !data?.signedUrl) return null;
+    if (error || !data?.signedUrl) {
+      console.warn(
+        `[subscribe] could not sign ${bucket}/${path}; using public fallback:`,
+        error?.message ?? 'no signedUrl returned'
+      );
+      return null;
+    }
     return data.signedUrl;
-  } catch {
+  } catch (e) {
+    console.warn('[subscribe] signed URL threw; using public fallback:', e);
     return null;
   }
+}
+
+// Public copy of the guide, served from /public. Used when a private signed
+// URL is unavailable so the guide email always has a working download link.
+function publicGuideUrl(): string {
+  return (
+    process.env.LEAD_MAGNET_PUBLIC_URL || `${SITE_URL}/charter-buyers-guide.pdf`
+  );
 }

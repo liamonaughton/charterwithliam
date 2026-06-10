@@ -10,7 +10,17 @@ let cached: Resend | null = null;
 function getResend(): Resend | null {
   if (cached) return cached;
   const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
+  if (!key) {
+    console.warn('[resend] RESEND_API_KEY is not set — no email will be sent.');
+    return null;
+  }
+  if (!process.env.RESEND_FROM) {
+    console.warn(
+      '[resend] RESEND_FROM is not set — falling back to onboarding@resend.dev, ' +
+        'which only delivers to your own Resend account email. Set a verified ' +
+        'sending domain to reach real subscribers.'
+    );
+  }
   cached = new Resend(key);
   return cached;
 }
@@ -51,10 +61,15 @@ async function send(opts: {
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       },
     });
-    if (error) return { ok: false, error: error.message };
+    if (error) {
+      console.error('[resend] send rejected:', error.message);
+      return { ok: false, error: error.message };
+    }
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : 'send failed' };
+    const msg = e instanceof Error ? e.message : 'send failed';
+    console.error('[resend] send threw:', msg);
+    return { ok: false, error: msg };
   }
 }
 
