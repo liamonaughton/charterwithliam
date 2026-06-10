@@ -355,35 +355,35 @@ export function buildHtml(): string {
     margin: 0;
   }
 
-  p { margin: 0 0 14px; line-height: 1.65; font-size: 12.5px; color: ${brand.text}; }
+  p { margin: 0 0 18px; line-height: 1.85; font-size: 12.5px; color: ${brand.text}; }
   strong { color: ${brand.text}; font-weight: 600; }
 
   /* ----- Sections: never break mid-section ----- */
   .guide-section {
     break-inside: avoid;
     page-break-inside: avoid;
-    padding: 6px 0 22px;
+    padding: 16px 0 34px;
     border-top: 1px solid ${brand.border};
-    margin-top: 26px;
+    margin-top: 44px;
   }
   .guide-section:first-of-type { border-top: none; }
 
   .eyebrow {
     font-family: 'Space Grotesk', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.24em;
     font-size: 9.5px;
     font-weight: 500;
     color: ${brand.accent};
-    margin: 0 0 8px;
+    margin: 0 0 14px;
   }
 
   h2 {
-    font-size: 24px;
-    margin-bottom: 14px;
+    font-size: 25px;
+    margin-bottom: 22px;
     display: flex;
     align-items: baseline;
-    gap: 12px;
+    gap: 14px;
   }
   .section-num {
     color: ${brand.accent};
@@ -396,15 +396,16 @@ export function buildHtml(): string {
   .aside {
     color: ${brand.muted};
     font-size: 11.5px;
+    line-height: 1.7;
     border-left: 2px solid ${brand.accent};
-    padding-left: 14px;
-    margin-top: 6px;
+    padding-left: 18px;
+    margin-top: 14px;
   }
   .aside strong { color: ${brand.text}; }
 
   /* ----- Cover ----- */
   .cover {
-    height: 920px;
+    height: 980px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -415,28 +416,28 @@ export function buildHtml(): string {
       radial-gradient(900px 520px at 85% -8%, rgba(46,139,255,0.30), transparent 60%),
       radial-gradient(700px 460px at 5% 108%, rgba(46,139,255,0.12), transparent 60%);
   }
-  .cover-rule { width: 56px; height: 4px; background: ${brand.accent}; border-radius: 2px; margin-bottom: 28px; }
+  .cover-rule { width: 56px; height: 4px; background: ${brand.accent}; border-radius: 2px; margin-bottom: 36px; }
   .cover-kicker {
     font-family: 'Space Grotesk', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.26em;
+    letter-spacing: 0.28em;
     font-size: 11px;
     font-weight: 500;
     color: ${brand.accent};
-    margin: 0 0 22px;
+    margin: 0 0 28px;
   }
   .cover-title {
     font-size: 58px;
-    line-height: 1.02;
+    line-height: 1.05;
     letter-spacing: -0.01em;
-    margin: 0 0 26px;
+    margin: 0 0 34px;
   }
   .cover-subtitle {
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.7;
     color: ${brand.muted};
     max-width: 460px;
-    margin: 0 0 40px;
+    margin: 0 0 52px;
   }
   .cover-byline {
     font-family: 'Space Grotesk', sans-serif;
@@ -451,7 +452,7 @@ export function buildHtml(): string {
     width: 200px;
     height: 1px;
     background: ${brand.border};
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   /* ----- Comparison table ----- */
@@ -459,15 +460,16 @@ export function buildHtml(): string {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    margin: 4px 0 18px;
+    margin: 10px 0 26px;
     font-size: 11px;
     border: 1px solid ${brand.accent};
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
   }
   table.compare th, table.compare td {
     text-align: left;
-    padding: 11px 13px;
+    padding: 15px 17px;
+    line-height: 1.55;
     vertical-align: top;
     border-bottom: 1px solid ${brand.border};
     border-right: 1px solid ${brand.border};
@@ -493,20 +495,20 @@ export function buildHtml(): string {
   }
 
   /* ----- Bullet lists ----- */
-  ul.bullets { list-style: none; margin: 4px 0 16px; padding: 0; }
+  ul.bullets { list-style: none; margin: 10px 0 22px; padding: 0; }
   ul.bullets li {
     position: relative;
-    padding-left: 20px;
-    margin-bottom: 9px;
+    padding-left: 26px;
+    margin-bottom: 14px;
     font-size: 12.5px;
-    line-height: 1.6;
+    line-height: 1.7;
     color: ${brand.text};
   }
   ul.bullets li::before {
     content: '';
     position: absolute;
     left: 2px;
-    top: 8px;
+    top: 9px;
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -518,21 +520,21 @@ export function buildHtml(): string {
     break-inside: avoid;
     border: 1px solid;
     border-left-width: 4px;
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin: 6px 0 4px;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 14px 0 6px;
     background: rgba(18,48,79,0.40);
   }
   .callout-label {
     font-family: 'Space Grotesk', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.18em;
     font-size: 9.5px;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
+    gap: 9px;
+    margin-bottom: 10px;
   }
   .callout-mark {
     display: inline-flex;
@@ -549,24 +551,24 @@ export function buildHtml(): string {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
     font-size: 13px;
-    margin: 0 0 4px;
+    margin: 0 0 7px;
     color: ${brand.text};
   }
-  .callout-body { margin: 0; font-size: 11.5px; color: ${brand.muted}; line-height: 1.55; }
+  .callout-body { margin: 0; font-size: 11.5px; color: ${brand.muted}; line-height: 1.7; }
 
   /* ----- Checklist ----- */
-  ul.checklist { list-style: none; margin: 6px 0 0; padding: 0; }
+  ul.checklist { list-style: none; margin: 12px 0 0; padding: 0; }
   li.check-item {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 11px 14px;
-    margin-bottom: 8px;
+    gap: 14px;
+    padding: 16px 20px;
+    margin-bottom: 11px;
     background: rgba(18,48,79,0.45);
     border: 1px solid ${brand.border};
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 12.5px;
-    line-height: 1.5;
+    line-height: 1.55;
     break-inside: avoid;
   }
   .check-box {
@@ -578,11 +580,11 @@ export function buildHtml(): string {
   }
 
   /* ----- Final CTA ----- */
-  .cta { break-inside: avoid; padding-top: 18px; }
+  .cta { break-inside: avoid; padding-top: 30px; }
   .cta-card {
     border: 1px solid ${brand.accent};
-    border-radius: 14px;
-    padding: 36px 32px;
+    border-radius: 16px;
+    padding: 52px 44px;
     text-align: center;
     background:
       radial-gradient(600px 300px at 50% -40%, rgba(46,139,255,0.28), transparent 70%),
@@ -597,8 +599,8 @@ export function buildHtml(): string {
     color: ${brand.accent};
     margin: 0 0 12px;
   }
-  .cta-title { font-size: 30px; margin: 0 0 14px; }
-  .cta-body { color: ${brand.muted}; max-width: 420px; margin: 0 auto 20px; font-size: 13px; }
+  .cta-title { font-size: 30px; margin: 0 0 18px; }
+  .cta-body { color: ${brand.muted}; max-width: 420px; margin: 0 auto 26px; font-size: 13px; line-height: 1.7; }
   .cta-url {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
@@ -608,7 +610,7 @@ export function buildHtml(): string {
   }
 
   /* Body content gets the wordmark anchored at the top of the flow page. */
-  .body-wordmark { margin-bottom: 18px; }
+  .body-wordmark { margin-bottom: 28px; }
 </style>
 </head>
 <body>
@@ -683,10 +685,10 @@ async function main(): Promise<void> {
       headerTemplate,
       footerTemplate,
       margin: {
-        top: '48px',
-        bottom: '48px',
-        left: '48px',
-        right: '48px',
+        top: '64px',
+        bottom: '64px',
+        left: '72px',
+        right: '72px',
       },
     });
 
