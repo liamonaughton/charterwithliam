@@ -5,7 +5,7 @@ import { subscribeSchema, formDataToObject } from '@/lib/validation';
 import { getServiceClient, isSupabaseConfigured } from '@/lib/supabase-server';
 import { verifyTurnstile } from '@/lib/turnstile';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { sendGuideEmail, sendEmptyLegsEmail } from '@/lib/resend';
+import { sendGuideEmail, sendEmptyLegsEmail, sendWelcomeEmail } from '@/lib/resend';
 
 export interface SubscribeState {
   ok: boolean;
@@ -103,7 +103,7 @@ export async function subscribe(
   // whether we've already emailed this person.
   const { data: existing, error: selectError } = await supabase
     .from('leads')
-    .select('id, first_name, wants_guide, wants_empty_legs, guide_sent_at')
+    .select('id, first_name, wants_guide, wants_empty_legs, guide_sent_at, welcome_sent_at')
     .eq('email', data.email)
     .maybeSingle();
 
@@ -140,6 +140,21 @@ export async function subscribe(
   }
 
   // 5. Send emails (best-effort; failures don't block the success path).
+
+  // Welcome: send once per lead, regardless of which assets they chose.
+  if (!existing?.welcome_sent_at) {
+    const sent = await sendWelcomeEmail({
+      to: data.email,
+      firstName: data.firstName,
+    });
+    if (sent.ok) {
+      await supabase
+        .from('leads')
+        .update({ welcome_sent_at: new Date().toISOString() })
+        .eq('email', data.email);
+    }
+  }
+
   const alreadyHadGuide = Boolean(existing?.guide_sent_at);
 
   if (data.wantsGuide && !alreadyHadGuide) {
