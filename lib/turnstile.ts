@@ -19,10 +19,12 @@ export async function verifyTurnstile(
   remoteIp?: string
 ): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
+  console.log('[turnstile] secret present:', Boolean(secret), 'len:', secret?.length ?? 0);
   if (!secret) {
     // Not configured — don't block submissions in dev/preview.
     return true;
   }
+  console.log('[turnstile] token present:', Boolean(token), 'len:', token?.length ?? 0);
   if (!token) return false;
 
   const body = new URLSearchParams();
@@ -39,6 +41,7 @@ export async function verifyTurnstile(
     });
     if (!res.ok) return false;
     const data = (await res.json()) as SiteVerifyResponse;
+    console.log('[turnstile] siteverify response:', JSON.stringify(data));
     return data.success === true;
   } catch {
     return false;
