@@ -36,16 +36,21 @@ export default function Turnstile({ className }: { className?: string }) {
         sitekey: siteKey,
         theme: 'auto',
         action: 'subscribe',
+        'response-field': false,
         callback: (token: string) => {
+          console.log('[turnstile-client] solved, token len:', token.length);
           if (tokenInputRef.current) tokenInputRef.current.value = token;
         },
-        'error-callback': () => {
+        'error-callback': (e: unknown) => {
+          console.log('[turnstile-client] error-callback', e);
           if (tokenInputRef.current) tokenInputRef.current.value = '';
         },
         'expired-callback': () => {
+          console.log('[turnstile-client] expired');
           if (tokenInputRef.current) tokenInputRef.current.value = '';
         },
       });
+      console.log('[turnstile-client] render called, widgetId:', widgetId.current);
     };
 
     if (window.turnstile) {
