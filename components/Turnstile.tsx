@@ -24,6 +24,7 @@ const SCRIPT_SRC =
 export default function Turnstile({ className }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
+  const tokenInputRef = useRef<HTMLInputElement>(null);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   useEffect(() => {
@@ -35,6 +36,15 @@ export default function Turnstile({ className }: { className?: string }) {
         sitekey: siteKey,
         theme: 'auto',
         action: 'subscribe',
+        callback: (token: string) => {
+          if (tokenInputRef.current) tokenInputRef.current.value = token;
+        },
+        'error-callback': () => {
+          if (tokenInputRef.current) tokenInputRef.current.value = '';
+        },
+        'expired-callback': () => {
+          if (tokenInputRef.current) tokenInputRef.current.value = '';
+        },
       });
     };
 
@@ -65,5 +75,10 @@ export default function Turnstile({ className }: { className?: string }) {
 
   if (!siteKey) return null;
 
-  return <div ref={ref} className={className} aria-label="Human verification" />;
+  return (
+    <>
+      <div ref={ref} className={className} aria-label="Human verification" />
+      <input type="hidden" name="cf-turnstile-response" ref={tokenInputRef} />
+    </>
+  );
 }
