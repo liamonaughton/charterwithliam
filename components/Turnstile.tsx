@@ -6,6 +6,7 @@ declare global {
   interface Window {
     turnstile?: {
       render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+      execute: (el?: string | HTMLElement, opts?: Record<string, unknown>) => void;
       reset: (id?: string) => void;
       remove: (id?: string) => void;
     };
@@ -31,8 +32,9 @@ export default function Turnstile({ className }: { className?: string }) {
     if (!siteKey || !ref.current) return;
 
     const renderWidget = () => {
-      if (!window.turnstile || !ref.current || widgetId.current) return;
-      widgetId.current = window.turnstile.render(ref.current, {
+      const ts = window.turnstile;
+      if (!ts || !ref.current || widgetId.current) return;
+      widgetId.current = ts.render(ref.current, {
         sitekey: siteKey,
         theme: 'auto',
         action: 'subscribe',
@@ -49,8 +51,25 @@ export default function Turnstile({ className }: { className?: string }) {
           console.log('[turnstile-client] expired');
           if (tokenInputRef.current) tokenInputRef.current.value = '';
         },
+        'timeout-callback': () => {
+          console.log('[turnstile-client] TIMEOUT - challenge did not complete');
+        },
       });
-      console.log('[turnstile-client] render called, widgetId:', widgetId.current);
+      console.log(
+        '[turnstile-client] render called, widgetId:',
+        widgetId.current,
+        'execute available:',
+        typeof ts.execute
+      );
+      // Explicit-render mount timing can leave the challenge un-executed; force it.
+      if (widgetId.current) {
+        try {
+          ts.execute(widgetId.current, { sitekey: siteKey });
+          console.log('[turnstile-client] execute() called');
+        } catch (err) {
+          console.log('[turnstile-client] execute() threw', err);
+        }
+      }
     };
 
     if (window.turnstile) {
