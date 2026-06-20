@@ -39,34 +39,21 @@ export default function Turnstile({ className }: { className?: string }) {
         action: 'subscribe',
         'response-field': false,
         callback: (token: string) => {
-          console.log('[turnstile-client] solved, token len:', token.length);
           if (tokenInputRef.current) tokenInputRef.current.value = token;
         },
-        'error-callback': (e: unknown) => {
-          console.log('[turnstile-client] error-callback', e);
+        'error-callback': () => {
           if (tokenInputRef.current) tokenInputRef.current.value = '';
         },
         'expired-callback': () => {
-          console.log('[turnstile-client] expired');
           if (tokenInputRef.current) tokenInputRef.current.value = '';
         },
-        'timeout-callback': () => {
-          console.log('[turnstile-client] TIMEOUT - challenge did not complete');
-        },
       });
-      console.log(
-        '[turnstile-client] render called, widgetId:',
-        widgetId.current,
-        'execute available:',
-        typeof ts.execute
-      );
       // Explicit-render mount timing can leave the challenge un-executed; force it.
       if (widgetId.current) {
         try {
           ts.execute(widgetId.current, { sitekey: siteKey });
-          console.log('[turnstile-client] execute() called');
-        } catch (err) {
-          console.log('[turnstile-client] execute() threw', err);
+        } catch {
+          /* noop */
         }
       }
     };
