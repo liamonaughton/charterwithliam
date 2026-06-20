@@ -10,12 +10,11 @@ declare global {
       reset: (id?: string) => void;
       remove: (id?: string) => void;
     };
-    onloadTurnstileCallback?: () => void;
   }
 }
 
 const SCRIPT_SRC =
-  'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit';
+  'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
 /**
  * Cloudflare Turnstile widget. Renders an invisible-friendly managed widget
@@ -72,10 +71,23 @@ export default function Turnstile({ className }: { className?: string }) {
       }
     };
 
+    // Render as soon as the API is ready. We poll for window.turnstile instead
+    // of using the script's ?onload= callback: that global fires only once and
+    // gets clobbered when multiple widgets mount on the same page (this site
+    // renders two lead forms), so only one widget would ever execute.
+    let cancelled = false;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    const stopPolling = () => {
+      if (pollTimer !== null) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    };
+
     if (window.turnstile) {
       renderWidget();
     } else {
-      window.onloadTurnstileCallback = renderWidget;
       if (!document.querySelector(`script[src="${SCRIPT_SRC}"]`)) {
         const script = document.createElement('script');
         script.src = SCRIPT_SRC;
@@ -83,9 +95,21 @@ export default function Turnstile({ className }: { className?: string }) {
         script.defer = true;
         document.head.appendChild(script);
       }
+      pollTimer = setInterval(() => {
+        if (cancelled) {
+          stopPolling();
+          return;
+        }
+        if (window.turnstile) {
+          stopPolling();
+          renderWidget();
+        }
+      }, 100);
     }
 
     return () => {
+      cancelled = true;
+      stopPolling();
       if (window.turnstile && widgetId.current) {
         try {
           window.turnstile.remove(widgetId.current);
