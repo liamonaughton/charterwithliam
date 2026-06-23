@@ -1,5 +1,6 @@
 import {
   Body,
+  Button,
   Container,
   Head,
   Hr,
@@ -11,6 +12,11 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 import * as t from './theme';
+
+// Public Supabase Storage object (bucket `guides`). Static link — Resend wraps
+// it automatically for native open/click tracking.
+const GUIDE_URL =
+  'https://hyusjyhvlaitvputbdxy.supabase.co/storage/v1/object/public/guides/charter-guide.pdf';
 
 export interface WelcomeEmailProps {
   firstName?: string;
@@ -41,8 +47,23 @@ export default function WelcomeEmail({
               how to spot a good deal, and how to book with your eyes open.
             </Text>
             <Text style={t.paragraph}>
-              Anything you&apos;ve asked for is on its way. In the meantime, if
-              you&apos;re weighing a specific trip, just reply with your route
+              Your Charter Guide is ready now — the no-nonsense breakdown of how
+              private charter pricing, safety, and the fine print actually work:
+            </Text>
+            <Section style={{ textAlign: 'center', margin: '28px 0' }}>
+              <Button style={t.button} href={GUIDE_URL}>
+                Read the Charter Guide
+              </Button>
+            </Section>
+            <Text style={t.muted}>
+              Button not working? Paste this link into your browser:
+              <br />
+              <Link href={GUIDE_URL} style={t.link}>
+                {GUIDE_URL}
+              </Link>
+            </Text>
+            <Text style={t.paragraph}>
+              If you&apos;re weighing a specific trip, just reply with your route
               and dates — I read every email personally.
             </Text>
             <Hr style={t.hr} />
