@@ -50,6 +50,10 @@ overrides assumptions from prior training. Read it first every session (`/start`
   read inline from `process.env` server-side only.
 - **Commit style:** imperative subject; co-author trailer on assistant commits.
   Branch off `main` for work; never force-push shared branches.
+- **`main` is the production source of truth** (since 2026-06-22). Deploy from
+  `main` after merging a PR — do **not** `--force`-promote a feature branch to
+  prod. Workflow: branch off `main` → PR → `--no-ff` merge → deploy `main`.
+  GitHub's default branch is `main`.
 
 ---
 

@@ -7,46 +7,56 @@ _Last updated: 2026-06-22_
 
 ## Where we are right now
 
-The **CharterWithLiam lead-capture landing page is built and deployed to
-production** (Vercel, aliased to `www.charterwithliam.com`). The lead funnel
-works end-to-end: form → Zod validation → Upstash rate-limit → Cloudflare
-Turnstile → upsert into Supabase `leads` → best-effort welcome/guide/empty-legs
-email via Resend.
+The **CharterWithLiam lead-capture landing page is live in production** (Vercel,
+aliased to `www.charterwithliam.com`). **`main` is now the production source of
+truth** — the long-lived `claude/magical-fermat-0k2i0z` feature branch has been
+merged in, GitHub's default branch is repointed to `main`, and deploys go from
+`main` (the manual `--force`-promote-a-feature-branch workflow is retired).
 
-Recent arc (all on branch `claude/magical-fermat-0k2i0z`, **pushed, not merged**):
+Shipped & verified this session:
 
-1. **Welcome email feature** added — `emails/welcome.tsx`, `sendWelcomeEmail()`
-   in `lib/resend.ts`, wired into `subscribe.ts`, migration `0002` adds
-   `welcome_sent_at`. (commit `a56bfc3`)
-2. **Turnstile token bug fixed.** Root cause: the homepage renders **two**
-   `LeadForm`/`Turnstile` widgets, but a single global `onloadTurnstileCallback`
-   got clobbered by the second mount, so only one widget executed → the other
-   form submitted an empty token. Fixed by polling for `window.turnstile`
-   readiness per-instance + calling `execute()` to force the challenge. Verified
-   live: `token present: true len: 858`, siteverify `success: true`. Diagnostic
-   logging since removed. (commits `b064240`→`c78e5d1`)
-3. **Resend "Domain not verified" fix.** `RESEND_FROM` had drifted to
-   `liam@send.charterwithliam.com` (unverified subdomain). Changed to the
-   verified root `liam@charterwithliam.com` in Vercel **Production** env + forced
-   redeploy. Production is live with the fix.
+1. **Guide-email feature shipped.** The welcome email now links a
+   **Supabase-hosted public `charter-guide.pdf`** (bucket `guides`) via a CTA
+   button + fallback link, with **Resend native open/click tracking** (plain
+   `<Button>`/`<Link>`, no custom redirect/table/migration). Single combined
+   send. (commit `a7acce7`)
+2. **Merge to `main`.** `claude/magical-fermat-0k2i0z` → `main` via `--no-ff`
+   merge `35217c3` (welcome email, Turnstile work, migration `0002`, session
+   docs). GitHub default branch repointed `feature → main`.
+3. **Turnstile re-entrancy fix — live & verified.** Root cause: a widget
+   rendered with the default `execution:'render'` auto-starts its challenge, so
+   the extra `execute()` call hit an already-executing widget ("already
+   executing" flood, no token). Fix: `execution:'execute'` + an `executedRef`
+   guard so `execute()` fires once per widget. PR #1
+   (`fix/turnstile-execute-reentrancy`, `c6845c3`) → `--no-ff` merge `4966b13` →
+   deployed. **Verified:** fresh-email submit is clean, console quiet.
 
-## Immediate next priorities
+## Immediate next priorities (🔴 = top of tomorrow's list)
 
-1. **Confirm the welcome email actually delivers.** After the `RESEND_FROM` →
-   root fix + redeploy, we had not yet tested an end-to-end send with a fresh
-   email. Submit with a brand-new address, confirm receipt, and check Resend →
-   Emails shows **Delivered** (not "Domain not verified"). _Blocked-adjacent:
-   verify migration `0002` is applied first (see NOTES N1)._
-2. **Set `RESEND_FROM` for Preview.** The CLI couldn't set it for "all Preview
-   branches" non-interactively, and removing the Production binding cleared the
-   shared Preview record — so Preview currently falls back to the code default
-   `onboarding@resend.dev`. Set it via the Vercel dashboard (tick Preview) to
-   `Liam <liam@charterwithliam.com>`.
-3. **Open the PR.** `claude/magical-fermat-0k2i0z` is pushed but not merged to
-   `main`. Once the welcome send is confirmed, open the PR for review.
+1. **🔴 Original test email won't re-trigger the welcome email. UNRESOLVED.**
+   Confirmed so far: the prod `leads` row was deleted (`SELECT` returns 0), fresh
+   emails work fine, and Resend suppression was checked — **nothing found**. So
+   **scenario A (wrong DB deleted) is RULED OUT**, and **scenario B (silent
+   Resend reject) is NOT confirmed**. **Next step:** resubmit the original
+   address and watch **Resend → Emails live** to see whether a send is even
+   **attempted**. *No attempt logged* ⇒ look **upstream** (caching / gate logic /
+   propagation), **not** Resend. The welcome gate is `if (!existing?.welcome_sent_at)`
+   on the pre-upsert `SELECT` snapshot (`app/actions/subscribe.ts:145`).
+2. **Surface the swallowed welcome-send failure.** Add `console.error` on
+   `!sent.ok` for the welcome send (1–3 lines, **off `main`, its own PR**). The
+   send block currently has no `else`/log (`subscribe.ts:145–156`) — that silence
+   is exactly why (1) is hard to diagnose.
+3. **Set `RESEND_FROM` for Vercel Preview** = `Liam <liam@charterwithliam.com>`
+   (currently unset → falls back to `onboarding@resend.dev`). Dashboard fix.
+4. **Decide `claude/friendly-keller-n3pn55`'s fate.** Competing **static-PDF**
+   guide-delivery (`public/charter-buyers-guide.pdf` + `scripts/generate-guide.ts`)
+   that will **conflict in `subscribe.ts`/`resend.ts`** if merged. Abandon or
+   reconcile deliberately. Possibly **salvage its silent-failure logging
+   pattern** (commit `e5c58ce`) — but as a fresh small edit, not a cherry-pick
+   (the file diverged + it reintroduces the static guide URL).
 
 ## Not now (deferred)
 
-- **Option 2 — dedicated sending subdomain.** Verifying `send.charterwithliam.com`
-  as its own Resend domain for reputation isolation. Revisit when adding
-  higher-volume marketing sends (empty-leg blasts). See `docs/DECISIONS.md` D2.
+- **Option 2 — dedicated sending subdomain** (`send.charterwithliam.com` verified
+  in Resend) for reputation isolation. Revisit at marketing volume. See
+  `docs/DECISIONS.md` D2.
