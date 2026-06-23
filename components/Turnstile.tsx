@@ -25,6 +25,7 @@ export default function Turnstile({ className }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
   const tokenInputRef = useRef<HTMLInputElement>(null);
+  const executedRef = useRef(false);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   useEffect(() => {
@@ -38,6 +39,10 @@ export default function Turnstile({ className }: { className?: string }) {
         theme: 'auto',
         action: 'subscribe',
         'response-field': false,
+        // Don't let render() auto-start the challenge — otherwise the execute()
+        // below lands on an already-executing widget ("already executing" / no
+        // token). With execution:'execute', our single execute() is the trigger.
+        execution: 'execute',
         callback: (token: string) => {
           if (tokenInputRef.current) tokenInputRef.current.value = token;
         },
@@ -48,8 +53,10 @@ export default function Turnstile({ className }: { className?: string }) {
           if (tokenInputRef.current) tokenInputRef.current.value = '';
         },
       });
-      // Explicit-render mount timing can leave the challenge un-executed; force it.
-      if (widgetId.current) {
+      // Force the challenge exactly once per widget. executedRef guards against
+      // any re-entrant execute() on a widget already mid-execution.
+      if (widgetId.current && !executedRef.current) {
+        executedRef.current = true;
         try {
           ts.execute(widgetId.current, { sitekey: siteKey });
         } catch {
@@ -97,6 +104,7 @@ export default function Turnstile({ className }: { className?: string }) {
     return () => {
       cancelled = true;
       stopPolling();
+      executedRef.current = false;
       if (window.turnstile && widgetId.current) {
         try {
           window.turnstile.remove(widgetId.current);
