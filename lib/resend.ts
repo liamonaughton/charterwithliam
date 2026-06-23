@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import GuideEmail from '@/emails/guide';
 import EmptyLegsEmail from '@/emails/empty-legs';
+import WelcomeEmail from '@/emails/welcome';
 import { SITE_URL, MAILING_ADDRESS } from './env';
 
 let cached: Resend | null = null;
@@ -56,6 +57,26 @@ async function send(opts: {
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : 'send failed' };
   }
+}
+
+export async function sendWelcomeEmail(opts: {
+  to: string;
+  firstName?: string;
+}): Promise<SendResult> {
+  const node = WelcomeEmail({
+    firstName: opts.firstName,
+    unsubscribeUrl,
+    mailingAddress: MAILING_ADDRESS,
+    replyTo: REPLY_TO,
+  });
+  const html = await render(node);
+  const text = await render(node, { plainText: true });
+  return send({
+    to: opts.to,
+    subject: 'Welcome to CharterWithLiam ✈️',
+    html,
+    text,
+  });
 }
 
 export async function sendGuideEmail(opts: {
