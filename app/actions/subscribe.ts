@@ -152,7 +152,13 @@ export async function subscribe(
         .from('leads')
         .update({ welcome_sent_at: new Date().toISOString() })
         .eq('email', data.email);
+    } else {
+      // Send was ATTEMPTED but Resend returned an error (or wasn't configured).
+      console.error(`[subscribe] welcome send FAILED for ${data.email}: ${sent.error}`);
     }
+  } else {
+    // Send NOT attempted — gate saw welcome_sent_at already set on the pre-upsert snapshot.
+    console.error(`[subscribe] welcome send SKIPPED for ${data.email}: welcome_sent_at already set (${existing.welcome_sent_at})`);
   }
 
   const alreadyHadGuide = Boolean(existing?.guide_sent_at);
