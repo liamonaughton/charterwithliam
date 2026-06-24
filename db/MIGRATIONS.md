@@ -10,15 +10,15 @@ SQL files live under **`supabase/migrations/`** (see path discrepancy note below
 | # | File | Adds | Applied |
 |---|------|------|---------|
 | 0001 | `supabase/migrations/0001_init_leads.sql` | `public.leads` table, unique `email`, `updated_at` trigger, RLS (no anon policies) | [x] 2026-06-19 |
-| 0002 | `supabase/migrations/0002_add_welcome_sent_at.sql` | `welcome_sent_at timestamptz` on `leads` | [ ] **UNCONFIRMED** |
+| 0002 | `supabase/migrations/0002_add_welcome_sent_at.sql` | `welcome_sent_at timestamptz` on `leads` | [x] 2026-06-22 |
 
 ## Unapplied / unconfirmed
 
-- **0002** — `welcome_sent_at` column. `subscribe.ts` SELECTs and UPDATEs this
-  column, so if 0002 is **not** applied in production, every subscribe will throw
-  on the select. **Verify in Supabase before the next delivery test** (NOTES N1).
-  To check: `select column_name from information_schema.columns where table_name
-  = 'leads' and column_name = 'welcome_sent_at';` — one row = applied.
+- _None._ 0002 was confirmed live in production on 2026-06-22 via
+  `select column_name from information_schema.columns where table_name = 'leads'
+  and column_name = 'welcome_sent_at';` (one row returned). This log was stale —
+  it still read UNCONFIRMED after NOTES N1 was already closed 🟢; reconciled
+  2026-06-24.
 
 ## Path discrepancy (decision needed)
 
