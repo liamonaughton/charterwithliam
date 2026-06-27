@@ -61,7 +61,7 @@ export default function PrivacyPage() {
           </Block>
 
           <Block title="Who we share it with">
-            We use trusted service providers to run this — HubSpot (the form you
+            We use trusted service providers to run this: HubSpot (the form you
             submit, our CRM, and email delivery), Vercel (hosting and
             privacy-friendly analytics), and the certificated operators we source
             your flight from (when you ask us to quote or book a trip). They

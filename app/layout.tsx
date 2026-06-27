@@ -20,11 +20,11 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'CharterWithLiam — Fly private, booked direct',
+    default: 'CharterWithLiam: Fly private, booked direct',
     template: '%s · CharterWithLiam',
   },
   description:
-    'Charter a private jet, booked direct with CharterWithLiam — vetted operators, transparent pricing, one point of contact. Tell us your trip and get a quote.',
+    'Charter a private jet, booked direct with CharterWithLiam: vetted operators, transparent pricing, one point of contact. Tell us your trip and get a quote.',
   keywords: [
     'private jet charter',
     'charter a private jet',
