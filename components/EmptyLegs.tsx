@@ -1,4 +1,4 @@
-import LeadForm from './LeadForm';
+import HubSpotForm from './HubSpotForm';
 
 export default function EmptyLegs() {
   return (
@@ -38,12 +38,7 @@ export default function EmptyLegs() {
             Get the guide too — it&apos;s already checked for you.
           </p>
           <div className="mt-6">
-            <LeadForm
-              variant="inline"
-              defaultEmptyLegs
-              submitLabel="Send me deals"
-              idPrefix="legs"
-            />
+            <HubSpotForm />
           </div>
         </div>
       </div>
