@@ -5,7 +5,7 @@ const items = [
   },
   {
     title: 'Transparent pricing',
-    body: 'An itemized quote, with my broker fee shown as its own line.',
+    body: 'An itemized quote, with our broker fee shown as its own line.',
   },
   {
     title: 'Vetted operators',
@@ -13,7 +13,7 @@ const items = [
   },
   {
     title: 'One point of contact',
-    body: 'Me, from first quote to wheels-up.',
+    body: 'A dedicated point of contact, from first quote to wheels-up.',
   },
   {
     title: 'Empty-leg access',
@@ -31,14 +31,14 @@ export default function WhatsInside() {
       <div className="container-page">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky">
-            Why book with Liam
+            Why book with us
           </p>
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
             What you get
           </h2>
           <p className="mt-3 text-lg text-mist">
-            One person to source the aircraft, vet the operator, and arrange every
-            detail.
+            A dedicated team to source the aircraft, vet the operator, and arrange
+            every detail.
           </p>
         </div>
 

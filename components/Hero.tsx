@@ -22,8 +22,8 @@ export default function Hero() {
             Fly private, booked direct.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-sky-soft">
-            Tell me your trip. I&apos;ll arrange the right aircraft with vetted
-            operators, at a fair price — and handle every detail myself.
+            Tell us your trip. Our team will arrange the right aircraft with
+            vetted operators. Let us handle all the details.
           </p>
           <ul className="mt-8 space-y-3 text-sm text-sky-soft">
             {[

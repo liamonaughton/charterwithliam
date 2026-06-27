@@ -14,8 +14,8 @@ export default function EmptyLegs() {
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-sky-soft">
             When a jet has to reposition without passengers, that flight can sell
             for up to 75% off. The catch: they&apos;re time-sensitive and they
-            don&apos;t last. Tell me your home airport and the routes you fly, and
-            I&apos;ll send the deals that actually match.
+            don&apos;t last. Tell us your home airport and the routes you fly, and
+            we&apos;ll send the deals that match.
           </p>
           <ul className="mt-8 space-y-3 text-sky-soft">
             <li className="flex items-start gap-3">

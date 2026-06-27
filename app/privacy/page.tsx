@@ -30,13 +30,13 @@ export default function PrivacyPage() {
       <section className="bg-white py-16">
         <div className="container-page prose-wrap mx-auto max-w-3xl space-y-8 text-ink/90">
           <Block title="The short version">
-            I collect your email (and anything else you choose to share) so I can
-            quote and arrange your private charter and, if you ask for them,
-            empty-leg deal alerts. I don&apos;t sell your data. You can
+            We collect your email (and anything else you choose to share) so we
+            can quote and arrange your private charter and, if you ask for them,
+            empty-leg deal alerts. We don&apos;t sell your data. You can
             unsubscribe at any time.
           </Block>
 
-          <Block title="What I collect">
+          <Block title="What we collect">
             <ul className="ml-5 list-disc space-y-1">
               <li>Your email address (required).</li>
               <li>Optionally: your first name, phone, home airport, and routes.</li>
@@ -45,38 +45,39 @@ export default function PrivacyPage() {
               </li>
               <li>
                 Basic attribution (which channel or link sent you here) and
-                coarse location (country), so I can understand what&apos;s working.
+                coarse location (country), so we can understand what&apos;s
+                working.
               </li>
             </ul>
           </Block>
 
-          <Block title="How I use it">
+          <Block title="How we use it">
             <ul className="ml-5 list-disc space-y-1">
               <li>To quote your trip and arrange your charter.</li>
               <li>To send any empty-leg alerts you opted into.</li>
               <li>To reply to you if you write back about a trip.</li>
-              <li>To understand which channels help, so I can improve.</li>
+              <li>To understand which channels help, so we can improve.</li>
             </ul>
           </Block>
 
-          <Block title="Who I share it with">
-            I use trusted service providers to run this — HubSpot (the form you
-            submit, my CRM, and email delivery), Vercel (hosting and
-            privacy-friendly analytics), and the certificated operators I source
-            your flight from (when you ask me to quote or book a trip). They
-            process data on my behalf, and I never sell your information.
+          <Block title="Who we share it with">
+            We use trusted service providers to run this — HubSpot (the form you
+            submit, our CRM, and email delivery), Vercel (hosting and
+            privacy-friendly analytics), and the certificated operators we source
+            your flight from (when you ask us to quote or book a trip). They
+            process data on our behalf, and we never sell your information.
           </Block>
 
-          <Block title="How it&apos;s protected">
+          <Block title="How we protect it">
             Your information is handled through reputable providers over encrypted
             connections, and access is limited to what&apos;s needed to quote and
             arrange your travel.
           </Block>
 
           <Block title="Email &amp; your choices" id="unsubscribe">
-            Every email I send includes a one-click unsubscribe link. You can opt
-            out at any time, and I&apos;ll stop sending. To request access to or
-            deletion of your data, just email me at{' '}
+            Every email we send includes a one-click unsubscribe link. You can opt
+            out at any time, and we&apos;ll stop sending. To request access to or
+            deletion of your data, just email us at{' '}
             <a href="mailto:liam@charterwithliam.com" className="text-sky underline">
               liam@charterwithliam.com
             </a>
@@ -84,7 +85,7 @@ export default function PrivacyPage() {
           </Block>
 
           <Block title="Contact">
-            Questions about this policy? Reach me at{' '}
+            Questions about this policy? Reach us at{' '}
             <a href="mailto:liam@charterwithliam.com" className="text-sky underline">
               liam@charterwithliam.com
             </a>

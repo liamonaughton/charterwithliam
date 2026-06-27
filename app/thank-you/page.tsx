@@ -33,19 +33,19 @@ export default async function ThankYouPage({
                 {email ? (
                   <>
                     {' '}
-                    — I&apos;ll reach{' '}
+                    — we&apos;ll reach{' '}
                     <span className="font-semibold text-white">{email}</span>
                   </>
                 ) : (
-                  <> — I&apos;ll be in touch</>
+                  <> — we&apos;ll be in touch</>
                 )}{' '}
                 shortly with real options for your trip. In a hurry? Just reply to
-                my email with your dates.
+                our email with your dates.
               </p>
 
               {onLegs && (
                 <p className="mt-4 rounded-card border border-white/10 bg-white/5 px-5 py-4 text-sky-soft">
-                  You&apos;re also on the empty-leg alert list — I&apos;ll send
+                  You&apos;re also on the empty-leg alert list — we&apos;ll send
                   deals that match your routes.
                 </p>
               )}

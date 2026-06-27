@@ -10,7 +10,7 @@ export default function Footer() {
               CharterWith<span className="text-sky">Liam</span>
             </span>
             <p className="mt-2 max-w-xs text-sm text-mist">
-              Private jet charter, booked direct. Arranged personally, start to
+              Private jet charter, booked direct. Handled by our team, start to
               finish.
             </p>
           </div>

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: '%s · CharterWithLiam',
   },
   description:
-    'Charter a private jet, booked direct with Liam — vetted operators, transparent pricing, one point of contact. Tell me your trip and get a quote.',
+    'Charter a private jet, booked direct with CharterWithLiam — vetted operators, transparent pricing, one point of contact. Tell us your trip and get a quote.',
   keywords: [
     'private jet charter',
     'charter a private jet',
