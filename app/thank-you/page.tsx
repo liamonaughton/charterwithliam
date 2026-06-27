@@ -29,15 +29,15 @@ export default async function ThankYouPage({
                 Thank you.
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-sky-soft">
-                Your request is in
+                Your request is in.
                 {email ? (
                   <>
                     {' '}
-                    — we&apos;ll reach{' '}
+                    We&apos;ll reach{' '}
                     <span className="font-semibold text-white">{email}</span>
                   </>
                 ) : (
-                  <> — we&apos;ll be in touch</>
+                  <> We&apos;ll be in touch</>
                 )}{' '}
                 shortly with real options for your trip. In a hurry? Just reply to
                 our email with your dates.
@@ -45,7 +45,7 @@ export default async function ThankYouPage({
 
               {onLegs && (
                 <p className="mt-4 rounded-card border border-white/10 bg-white/5 px-5 py-4 text-sky-soft">
-                  You&apos;re also on the empty-leg alert list — we&apos;ll send
+                  You&apos;re also on the empty-leg alert list. We&apos;ll send
                   deals that match your routes.
                 </p>
               )}
