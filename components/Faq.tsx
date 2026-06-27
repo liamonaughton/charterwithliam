@@ -1,15 +1,15 @@
 const faqs = [
   {
     q: 'Do you fly the plane yourselves?',
-    a: 'No — we’re a charter broker. We arrange your flight with vetted, certificated operators, who hold the aircraft and operational control.',
+    a: 'No, we’re a charter broker. We arrange your flight with vetted, certificated operators, who hold the aircraft and operational control.',
   },
   {
     q: 'How is your fee charged?',
-    a: 'As its own line item on your invoice. You see exactly what the operator charges and what we charge — separately, with nothing hidden.',
+    a: 'As its own line item on your invoice. You see exactly what the operator charges and what we charge, separately, with nothing hidden.',
   },
   {
     q: 'How fast can I get a quote?',
-    a: 'Send your route, dates, and passenger count, and we’ll reply with options — usually the same day.',
+    a: 'Send your route, dates, and passenger count, and we’ll reply with options, usually the same day.',
   },
   {
     q: 'What do you do with my info?',
