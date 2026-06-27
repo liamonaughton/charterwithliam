@@ -1,27 +1,23 @@
 const items = [
   {
-    title: 'The three ways to fly private',
-    body: 'On-demand charter, jet cards, fractional — and which actually fits how you travel.',
+    title: 'The right aircraft',
+    body: 'Matched to your route, passengers, and schedule.',
   },
   {
-    title: 'What drives the price',
-    body: 'The real cost levers behind a charter quote — and the ones that bring it down.',
+    title: 'Transparent pricing',
+    body: 'A fully itemized quote with no hidden fees.',
   },
   {
-    title: 'How to read a quote',
-    body: 'Decode the line items so the final invoice never surprises you.',
+    title: 'Vetted operators',
+    body: 'Certificated operators with the safety record to match.',
   },
   {
-    title: 'The safety questions that matter',
-    body: 'The questions that separate true operators from middlemen brokering your flight.',
+    title: 'One point of contact',
+    body: 'A dedicated point of contact, from first quote to wheels-up.',
   },
   {
-    title: 'How empty legs work',
-    body: 'Why repositioning flights go cheap — and how to fly for up to 75% off.',
-  },
-  {
-    title: 'A pre-booking checklist',
-    body: 'One page to run through before you ever put down a deposit.',
+    title: 'Personal service',
+    body: 'Arranged quietly and handled on your schedule.',
   },
 ];
 
@@ -31,14 +27,13 @@ export default function WhatsInside() {
       <div className="container-page">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky">
-            The lead magnet
+            Why book with us
           </p>
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            What&apos;s in the guide
+            What you get
           </h2>
           <p className="mt-3 text-lg text-mist">
-            Everything a first-time (or burned-once) private flyer wishes they
-            knew before booking.
+            We source the aircraft, vet the operator, and arrange every detail.
           </p>
         </div>
 

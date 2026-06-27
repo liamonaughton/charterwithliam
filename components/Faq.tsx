@@ -1,19 +1,19 @@
 const faqs = [
   {
-    q: 'Is this really free?',
-    a: 'Yes. The Charter Buyer’s Guide is free, and the empty-leg alerts are free too. No catch.',
+    q: 'Do you fly the plane yourselves?',
+    a: 'No — we’re a charter broker. We arrange your flight with vetted, certificated operators, who hold the aircraft and operational control.',
   },
   {
-    q: 'Will you spam me?',
-    a: 'No. The guide, then the occasional deal or useful note — that’s it. Unsubscribe anytime in one click.',
+    q: 'How is your fee charged?',
+    a: 'As its own line item on your invoice. You see exactly what the operator charges and what we charge — separately, with nothing hidden.',
+  },
+  {
+    q: 'How fast can I get a quote?',
+    a: 'Send your route, dates, and passenger count, and we’ll reply with options — usually the same day.',
   },
   {
     q: 'What do you do with my info?',
     a: 'It’s stored securely and never sold. See the privacy policy for the full detail.',
-  },
-  {
-    q: 'Can you help me book a specific trip?',
-    a: 'Yes — reply to any email with your route and dates, and I’ll help you find the right flight.',
   },
 ];
 

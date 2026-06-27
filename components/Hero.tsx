@@ -16,20 +16,20 @@ export default function Hero() {
       <div className="container-page relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
         <div className="reveal">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky">
-            Private aviation, decoded
+            Private jet charter
           </p>
           <h1 className="mt-4 text-4xl font-bold leading-[1.08] sm:text-5xl lg:text-6xl">
-            Fly private without overpaying — or getting burned.
+            Fly private, booked direct.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-sky-soft">
-            The free Charter Buyer&apos;s Guide: how pricing, safety, and the fine
-            print actually work — so you book with your eyes open.
+            Tell us your trip. Our team will arrange the right aircraft with
+            vetted operators. Let us handle all the details.
           </p>
           <ul className="mt-8 space-y-3 text-sm text-sky-soft">
             {[
-              'What really drives the price of a charter',
-              'How to read a quote so the invoice never surprises you',
-              'How empty legs work — fly for up to 75% off',
+              'Vetted operators only',
+              'Transparent, itemized pricing',
+              'One point of contact, start to finish',
             ].map((item) => (
               <li key={item} className="flex items-start gap-3">
                 <CheckIcon />
@@ -44,8 +44,7 @@ export default function Hero() {
             <HubSpotForm />
           </div>
           <p className="mt-4 text-center text-sm text-sky-soft">
-            Join {SUBSCRIBER_COUNT}+ travelers getting the real story on flying
-            private. No spam. Unsubscribe in one click.
+            Trusted by {SUBSCRIBER_COUNT}+ private travelers.
           </p>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt =
-  'CharterWithLiam — Fly private without overpaying or getting burned.';
+export const alt = 'CharterWithLiam — Fly private, booked direct.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -31,7 +30,7 @@ export default function OgImage() {
             letterSpacing: 4,
           }}
         >
-          PRIVATE AVIATION, DECODED
+          PRIVATE JET CHARTER
         </div>
         <div
           style={{
@@ -43,7 +42,7 @@ export default function OgImage() {
             maxWidth: 980,
           }}
         >
-          Fly private without overpaying — or getting burned.
+          Fly private, booked direct.
         </div>
         <div
           style={{
