@@ -16,6 +16,10 @@ const items = [
     body: 'A dedicated point of contact, from first quote to wheels-up.',
   },
   {
+    title: 'Door to door',
+    body: 'Catering, ground transport, and the details in between.',
+  },
+  {
     title: 'Personal service',
     body: 'Arranged quietly and handled on your schedule.',
   },
