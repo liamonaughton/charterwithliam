@@ -41,15 +41,7 @@ export default function Hero() {
 
         <div className="reveal">
           <div className="rounded-2xl border border-white/10 bg-white p-6 text-ink shadow-card sm:p-8">
-            <h2 className="font-display text-xl font-semibold">
-              Get the free guide
-            </h2>
-            <p className="mt-1 text-sm text-mist">
-              Plus optional empty-leg deal alerts for your routes.
-            </p>
-            <div className="mt-6">
-              <HubSpotForm />
-            </div>
+            <HubSpotForm />
           </div>
           <p className="mt-4 text-center text-sm text-sky-soft">
             Join {SUBSCRIBER_COUNT}+ travelers getting the real story on flying
