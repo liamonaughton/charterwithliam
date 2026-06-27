@@ -5,7 +5,7 @@ const items = [
   },
   {
     title: 'Transparent pricing',
-    body: 'An itemized quote, with our broker fee shown as its own line.',
+    body: 'A fully itemized quote with no hidden fees.',
   },
   {
     title: 'Vetted operators',
@@ -14,10 +14,6 @@ const items = [
   {
     title: 'One point of contact',
     body: 'A dedicated point of contact, from first quote to wheels-up.',
-  },
-  {
-    title: 'Empty-leg access',
-    body: 'Repositioning flights, when they fit your trip, for less.',
   },
   {
     title: 'Personal service',
@@ -37,8 +33,7 @@ export default function WhatsInside() {
             What you get
           </h2>
           <p className="mt-3 text-lg text-mist">
-            A dedicated team to source the aircraft, vet the operator, and arrange
-            every detail.
+            We source the aircraft, vet the operator, and arrange every detail.
           </p>
         </div>
 

@@ -24,7 +24,7 @@ export default function Credibility() {
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink/80">
               I started CharterWithLiam to make chartering simple and honest. My
               team and I source the aircraft, vet the operator, and arrange the
-              flight — so you have one team in your corner, and a price with
+              flight, so you have one team in your corner, and a price with
               nothing hidden.
             </p>
 
