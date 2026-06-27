@@ -1,4 +1,4 @@
-import LeadForm from './LeadForm';
+import HubSpotForm from './HubSpotForm';
 import { SUBSCRIBER_COUNT } from '@/lib/env';
 
 export default function Hero() {
@@ -48,7 +48,7 @@ export default function Hero() {
               Plus optional empty-leg deal alerts for your routes.
             </p>
             <div className="mt-6">
-              <LeadForm variant="hero" submitLabel="Send me the guide" idPrefix="hero" />
+              <HubSpotForm />
             </div>
           </div>
           <p className="mt-4 text-center text-sm text-sky-soft">
