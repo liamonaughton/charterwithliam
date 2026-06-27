@@ -13,25 +13,25 @@ export default function Hero() {
             'radial-gradient(1200px 600px at 80% -10%, rgba(46,139,255,0.28), transparent 60%), radial-gradient(900px 500px at 10% 110%, rgba(46,139,255,0.12), transparent 60%)',
         }}
       />
-      <div className="container-page relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
-        <div className="reveal">
+      <div className="container-page relative py-16 sm:py-20 lg:py-28">
+        <div className="reveal mx-auto max-w-3xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky">
             Private jet charter
           </p>
           <h1 className="mt-4 text-4xl font-bold leading-[1.08] sm:text-5xl lg:text-6xl">
             Fly private, booked direct.
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-sky-soft">
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-sky-soft">
             Tell us your trip. Our team will arrange the right aircraft with
             vetted operators. Let us handle all the details.
           </p>
-          <ul className="mt-8 space-y-3 text-sm text-sky-soft">
+          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-sky-soft">
             {[
               'Vetted operators only',
               'Transparent, itemized pricing',
               'One point of contact, start to finish',
             ].map((item) => (
-              <li key={item} className="flex items-start gap-3">
+              <li key={item} className="flex items-center gap-2">
                 <CheckIcon />
                 <span>{item}</span>
               </li>
@@ -39,7 +39,7 @@ export default function Hero() {
           </ul>
         </div>
 
-        <div className="reveal">
+        <div className="reveal mx-auto mt-10 max-w-xl sm:mt-12">
           <div className="rounded-2xl border border-white/10 bg-white p-6 text-ink shadow-card sm:p-8">
             <HubSpotForm />
           </div>
