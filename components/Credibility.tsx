@@ -22,12 +22,10 @@ export default function Credibility() {
             </p>
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Meet Liam</h2>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink/80">
-              I work in private aviation, and I started CharterWithLiam to cut
-              through the noise. Too many people overpay or get steered into the
-              wrong aircraft because no one in their corner actually knows how this
-              world works. So I do it for you — I source the aircraft, vet the
-              operator, and book the flight, with honest pricing and one person you
-              can call. That&apos;s the whole idea.
+              I work in private aviation, and I started CharterWithLiam to make
+              chartering simple and honest. I source the aircraft, vet the
+              operator, and arrange the flight — so you have one person to call,
+              and a price with nothing hidden.
             </p>
 
             {/* Social proof row — placeholder until live counts / press exist. */}

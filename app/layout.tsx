@@ -20,11 +20,11 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'CharterWithLiam — Fly private without overpaying',
+    default: 'CharterWithLiam — Fly private, booked direct',
     template: '%s · CharterWithLiam',
   },
   description:
-    'Charter a private jet with Liam: safety-vetted operators, honest itemized pricing, and one point of contact from quote to wheels-up. Tell me your trip and get a quote.',
+    'Charter a private jet, booked direct with Liam — vetted operators, transparent pricing, one point of contact. Tell me your trip and get a quote.',
   keywords: [
     'private jet charter',
     'charter a private jet',
@@ -38,15 +38,15 @@ export const metadata: Metadata = {
     type: 'website',
     url: SITE_URL,
     siteName: 'CharterWithLiam',
-    title: 'Fly private without overpaying — or getting burned.',
+    title: 'Fly private, booked direct.',
     description:
-      'Charter a private jet with someone in your corner — vetted operators, honest pricing, one point of contact.',
+      'Charter a private jet with vetted operators, transparent pricing, and one point of contact.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Fly private without overpaying — or getting burned.',
+    title: 'Fly private, booked direct.',
     description:
-      'Charter a private jet with someone in your corner — vetted operators, honest pricing, one point of contact.',
+      'Charter a private jet with vetted operators, transparent pricing, and one point of contact.',
   },
   robots: { index: true, follow: true },
 };

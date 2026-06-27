@@ -23,10 +23,10 @@ export default async function ThankYouPage({
           <div className="mx-auto max-w-xl text-center">
             <div className="reveal">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky">
-                Got it
+                Received
               </p>
               <h1 className="mt-4 text-4xl font-bold sm:text-5xl">
-                Thanks — I&apos;m on it ✈️
+                Thank you.
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-sky-soft">
                 Your request is in

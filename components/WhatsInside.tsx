@@ -1,27 +1,27 @@
 const items = [
   {
     title: 'The right aircraft',
-    body: 'Matched to your route, passengers, and budget — not whatever pays the broker the most.',
+    body: 'Matched to your route, passengers, and schedule.',
   },
   {
-    title: 'Honest pricing',
-    body: 'An itemized quote with the markup shown. No mystery fees, no surprise invoice.',
+    title: 'Transparent pricing',
+    body: 'An itemized quote, with my broker fee shown as its own line.',
   },
   {
-    title: 'Safety-vetted operators',
-    body: 'Every flight flown by certificated operators with the safety record to back it up.',
+    title: 'Vetted operators',
+    body: 'Certificated operators with the safety record to match.',
   },
   {
     title: 'One point of contact',
-    body: 'Me, from first quote to wheels-up — and reachable the moment plans change.',
+    body: 'Me, from first quote to wheels-up.',
   },
   {
-    title: 'Empty-leg savings',
-    body: 'When a repositioning flight fits your trip, you fly for up to 75% less.',
+    title: 'Empty-leg access',
+    body: 'Repositioning flights, when they fit your trip, for less.',
   },
   {
-    title: 'No pressure',
-    body: "Straight answers and real options. Book when it's right for you — or don't.",
+    title: 'Personal service',
+    body: 'Arranged quietly and handled on your schedule.',
   },
 ];
 
@@ -34,11 +34,11 @@ export default function WhatsInside() {
             Why book with Liam
           </p>
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            What you get when you charter with me
+            What you get
           </h2>
           <p className="mt-3 text-lg text-mist">
-            Not a markup-hungry middleman — one person who sources the aircraft,
-            vets the operator, and actually answers the phone.
+            One person to source the aircraft, vet the operator, and arrange every
+            detail.
           </p>
         </div>
 

@@ -16,21 +16,20 @@ export default function Hero() {
       <div className="container-page relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
         <div className="reveal">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky">
-            Private jet charter, booked direct
+            Private jet charter
           </p>
           <h1 className="mt-4 text-4xl font-bold leading-[1.08] sm:text-5xl lg:text-6xl">
-            Fly private without overpaying — or getting burned.
+            Fly private, booked direct.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-sky-soft">
-            Tell me where you&apos;re flying and I&apos;ll book it — the right
-            aircraft from safety-vetted operators, at an honest price, with one
-            person handling every detail. That&apos;s me.
+            Tell me your trip. I&apos;ll arrange the right aircraft with vetted
+            operators, at a fair price — and handle every detail myself.
           </p>
           <ul className="mt-8 space-y-3 text-sm text-sky-soft">
             {[
-              'Quotes from safety-vetted operators — never the cheapest corner-cut',
-              'Itemized, honest pricing — you see exactly what you pay for',
-              'One point of contact from quote to wheels-up — me, directly',
+              'Vetted operators only',
+              'Transparent, itemized pricing',
+              'One point of contact, start to finish',
             ].map((item) => (
               <li key={item} className="flex items-start gap-3">
                 <CheckIcon />
@@ -45,8 +44,7 @@ export default function Hero() {
             <HubSpotForm />
           </div>
           <p className="mt-4 text-center text-sm text-sky-soft">
-            Join {SUBSCRIBER_COUNT}+ travelers who book private the smart way. No
-            pressure, no spam — just a straight answer on your trip.
+            Trusted by {SUBSCRIBER_COUNT}+ private travelers.
           </p>
         </div>
       </div>
