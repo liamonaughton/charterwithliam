@@ -24,9 +24,10 @@ export default function Credibility() {
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink/80">
               I work in private aviation, and I started CharterWithLiam to cut
               through the noise. Too many people overpay or get steered into the
-              wrong aircraft because no one explained how this world really works.
-              The guide is the conversation I&apos;d have with a friend before they
-              booked their first flight.
+              wrong aircraft because no one in their corner actually knows how this
+              world works. So I do it for you — I source the aircraft, vet the
+              operator, and book the flight, with honest pricing and one person you
+              can call. That&apos;s the whole idea.
             </p>
 
             {/* Social proof row — placeholder until live counts / press exist. */}

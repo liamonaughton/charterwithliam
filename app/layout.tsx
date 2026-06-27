@@ -24,12 +24,13 @@ export const metadata: Metadata = {
     template: '%s · CharterWithLiam',
   },
   description:
-    "The free Charter Buyer's Guide: how private aviation pricing, safety, and the fine print actually work — so you book with your eyes open.",
+    'Charter a private jet with Liam: safety-vetted operators, honest itemized pricing, and one point of contact from quote to wheels-up. Tell me your trip and get a quote.',
   keywords: [
     'private jet charter',
+    'charter a private jet',
+    'private jet broker',
     'empty leg flights',
-    'charter buyers guide',
-    'private aviation',
+    'jet charter quote',
     'fly private',
   ],
   authors: [{ name: 'Liam' }],
@@ -39,13 +40,13 @@ export const metadata: Metadata = {
     siteName: 'CharterWithLiam',
     title: 'Fly private without overpaying — or getting burned.',
     description:
-      "The free Charter Buyer's Guide: how pricing, safety, and the fine print actually work.",
+      'Charter a private jet with someone in your corner — vetted operators, honest pricing, one point of contact.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Fly private without overpaying — or getting burned.',
     description:
-      "The free Charter Buyer's Guide: how pricing, safety, and the fine print actually work.",
+      'Charter a private jet with someone in your corner — vetted operators, honest pricing, one point of contact.',
   },
   robots: { index: true, follow: true },
 };

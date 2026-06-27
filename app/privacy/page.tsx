@@ -31,7 +31,7 @@ export default function PrivacyPage() {
         <div className="container-page prose-wrap mx-auto max-w-3xl space-y-8 text-ink/90">
           <Block title="The short version">
             I collect your email (and anything else you choose to share) so I can
-            send you the Charter Buyer&apos;s Guide and, if you ask for them,
+            quote and arrange your private charter and, if you ask for them,
             empty-leg deal alerts. I don&apos;t sell your data. You can
             unsubscribe at any time.
           </Block>
@@ -52,24 +52,25 @@ export default function PrivacyPage() {
 
           <Block title="How I use it">
             <ul className="ml-5 list-disc space-y-1">
-              <li>To deliver the guide and any alerts you opted into.</li>
+              <li>To quote your trip and arrange your charter.</li>
+              <li>To send any empty-leg alerts you opted into.</li>
               <li>To reply to you if you write back about a trip.</li>
-              <li>To improve the content and understand which channels help.</li>
+              <li>To understand which channels help, so I can improve.</li>
             </ul>
           </Block>
 
           <Block title="Who I share it with">
-            I use trusted service providers to run this — Supabase (secure
-            storage), Resend (email delivery), Vercel (hosting and privacy-friendly
-            analytics), and Cloudflare Turnstile (bot protection). They process
-            data on my behalf. I never sell your information.
+            I use trusted service providers to run this — HubSpot (the form you
+            submit, my CRM, and email delivery), Vercel (hosting and
+            privacy-friendly analytics), and the certificated operators I source
+            your flight from (when you ask me to quote or book a trip). They
+            process data on my behalf, and I never sell your information.
           </Block>
 
           <Block title="How it&apos;s protected">
-            Your data is stored in a secured database that is not publicly
-            accessible — all access goes through server-side keys that are never
-            exposed to the browser. Files like the guide are served through
-            expiring, signed links.
+            Your information is handled through reputable providers over encrypted
+            connections, and access is limited to what&apos;s needed to quote and
+            arrange your travel.
           </Block>
 
           <Block title="Email &amp; your choices" id="unsubscribe">

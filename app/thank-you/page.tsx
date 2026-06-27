@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import { SOCIAL } from '@/lib/env';
 
 export const metadata: Metadata = {
-  title: 'Check your inbox',
+  title: 'Request received',
   robots: { index: false, follow: false },
 };
 
@@ -23,21 +23,24 @@ export default async function ThankYouPage({
           <div className="mx-auto max-w-xl text-center">
             <div className="reveal">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky">
-                You&apos;re in
+                Got it
               </p>
               <h1 className="mt-4 text-4xl font-bold sm:text-5xl">
-                Check your inbox 📨
+                Thanks — I&apos;m on it ✈️
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-sky-soft">
-                Your Charter Buyer&apos;s Guide is on its way
+                Your request is in
                 {email ? (
                   <>
                     {' '}
-                    to <span className="font-semibold text-white">{email}</span>
+                    — I&apos;ll reach{' '}
+                    <span className="font-semibold text-white">{email}</span>
                   </>
-                ) : null}
-                . Didn&apos;t get it within 5 minutes? Check spam or promotions, or
-                just reply to that email.
+                ) : (
+                  <> — I&apos;ll be in touch</>
+                )}{' '}
+                shortly with real options for your trip. In a hurry? Just reply to
+                my email with your dates.
               </p>
 
               {onLegs && (

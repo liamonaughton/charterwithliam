@@ -31,7 +31,7 @@ export default function OgImage() {
             letterSpacing: 4,
           }}
         >
-          PRIVATE AVIATION, DECODED
+          PRIVATE JET CHARTER, BOOKED DIRECT
         </div>
         <div
           style={{
