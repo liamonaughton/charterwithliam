@@ -31,15 +31,7 @@ export default function EmptyLegs() {
         </div>
 
         <div className="rounded-2xl bg-white p-6 text-ink shadow-card sm:p-8">
-          <h3 className="font-display text-xl font-semibold">
-            Join the empty-leg list
-          </h3>
-          <p className="mt-1 text-sm text-mist">
-            Get the guide too — it&apos;s already checked for you.
-          </p>
-          <div className="mt-6">
-            <HubSpotForm />
-          </div>
+          <HubSpotForm />
         </div>
       </div>
     </section>
